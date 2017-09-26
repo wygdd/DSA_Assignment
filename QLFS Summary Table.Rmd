@@ -71,8 +71,6 @@ kable(cry01table)
 Class of first degree achieved
 ```{r}
 var_label(qlfs$degcls)
-
 ```
-
 
 
