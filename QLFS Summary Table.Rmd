@@ -17,7 +17,7 @@ library(knitr)
 library(ggplot2)
 ```
 
-## Data type
+## Find Data information
 The data are labelled, to view the labels 
 ```{r}
 # Install pacakges
@@ -27,7 +27,10 @@ library(labelled)
 var_label(qlfs)
 
 # View a specific label for a variabel
+val_labels(qlfs$cry01)
 
+# What labels exist in the dataset
+unique(qlfs$cry01)
 ```
 
 ## Age 
@@ -44,6 +47,8 @@ ggplot(agetable, aes(x=age,y=count))+geom_bar(stat='identity')
 Country within UK
 
 ```{r}
+#val_labels(qlfs$country)
+# unique(qlfs$country)
 countrytable <- qlfs %>% group_by(country) %>% summarise(count=n())
 countrytable$Labels <- c('England','Wales','Scotland','Scotland North of Caledonian','Northern Ireland')
 colnames(countrytable) <- c('Country','Count','Labels')
@@ -51,4 +56,11 @@ kable(countrytable)
 ```
 
 
-## 
+##cry01
+Country of birth
+```{r}
+#val_labels(qlfs$cry01)
+cry01table <- qlfs %>% group_by(cry01) %>% summarise(count=n())
+cry01table$Labels <- val_labels(qlfs$cry01)
+```
+
