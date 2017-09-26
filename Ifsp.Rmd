@@ -18,10 +18,29 @@ lfsp <- read_dta("lfsp_jm17_eul.dta")
 #2. Exploratory Data Analysis
 
 ```{r}
+# 
+library(dplyr)
+unique(lfsp$MARSTA)
+drop9 <- lfsp[lfsp$MARSTA==-9,] 
+select3456 <- lfsp[lfsp$MARSTA==3|lfsp$MARSTA==4|lfsp$MARSTA==5|lfsp$MARSTA==6,]
+select3456$MARSTA
 
+RELIG11
+MARSTA
+SEX
+AGE
+INDE07M
+BANDG
+ETHGBEUL
+HIGHQUAL15D
+HIGHHO
+
+  
 ```
 
-
+##Marsta
+page 283 
+2 dummy variables: 
 
 
 #3. Methods
