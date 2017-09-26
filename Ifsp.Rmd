@@ -18,29 +18,46 @@ lfsp <- read_dta("lfsp_jm17_eul.dta")
 #2. Exploratory Data Analysis
 
 ```{r}
-# 
+
+selected <- lfsp %>% select(MARSTA,RELIG11,SEX,AGE,INDE07M,BANDG,ETHGBEUL,HIQUL15D,HIGHO)
+
+# MARSTA
 library(dplyr)
-unique(lfsp$MARSTA)
-drop9 <- lfsp[lfsp$MARSTA==-9,] 
-select3456 <- lfsp[lfsp$MARSTA==3|lfsp$MARSTA==4|lfsp$MARSTA==5|lfsp$MARSTA==6,]
-select3456$MARSTA
+selected <- selected[!selected$MARSTA==-9,] 
+#drop9 <- lfsp %>% filter(!MARSTA==-9)
 
-RELIG11
-MARSTA
-SEX
-AGE
-INDE07M
-BANDG
-ETHGBEUL
-HIGHQUAL15D
-HIGHHO
+#RELIG11
+selected <- selected[!selected$RELIG11==-8,] 
 
-  
+
+#SEX
+selected <- selected[!selected$RELIG11==-8,] 
+
+
+#AGE
+
+
+#INDE07M
+selected <- selected[!selected$INDE07M==-8,] 
+
+#BANDG
+selected <- selected[!selected$BANDG==1 & !selected$BANDG==2 & !selected$BANDG==3 & !selected$BANDG==-8 &!selected$BANDG==-9,] 
+
+#ETHGBEUL
+selected <- selected[!selected$ETHGBEUL==-8 & !selected$ETHGBEUL==-9,] 
+val_labels(selected$ETHGBEUL)
+
+#HIQUAL15D
+selected <- selected[!selected$HIQUL15D==-8 & !selected$HIQUL15D==-9,] 
+
+#HIGHHO
+selected <- selected[!selected$HIGHO==-8,] 
+ 
+selected %>% group_by(HIGHO)%>% summarise(count=n())
+
 ```
 
-##Marsta
-page 283 
-2 dummy variables: 
+ 
 
 
 #3. Methods
