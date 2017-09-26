@@ -14,6 +14,7 @@ library(haven)
 qlfs <- read_dta("qlfs13q1-q4.dta")
 library(dplyr)
 library(knitr)
+library(magrittr)
 library(ggplot2)
 ```
 
@@ -21,16 +22,16 @@ library(ggplot2)
 The data are labelled, to view the labels 
 ```{r}
 # Install pacakges
-install.packages("labelled")
+#install.packages("labelled")
 library(labelled)
 # View all the labels
-var_label(qlfs)
+#var_label(qlfs)
 
 # View a specific label for a variabel
-val_labels(qlfs$cry01)
+#val_labels(qlfs$cry01)
 
 # What labels exist in the dataset
-unique(qlfs$cry01)
+#unique(qlfs$cry01)
 ```
 
 ## Age 
@@ -61,6 +62,17 @@ Country of birth
 ```{r}
 #val_labels(qlfs$cry01)
 cry01table <- qlfs %>% group_by(cry01) %>% summarise(count=n())
-cry01table$Labels <- val_labels(qlfs$cry01)
+cry01table$Labels <- c('Does not apply','No answer','India','Republic of Ireland','Pakistan','Poland','England','Northern Ireland','Scotland','Wales','UK, Britain (Did not know country)','Other')
+colnames(cry01table) <- c('Country of Birth','Count','Lables')
+kable(cry01table)
 ```
+
+##degcls
+Class of first degree achieved
+```{r}
+var_label(qlfs$degcls)
+
+```
+
+
 
