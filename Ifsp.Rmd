@@ -15,3 +15,35 @@ library(haven)
 lfsp <- read_dta("lfsp_jm17_eul.dta")
 ```
 
+#2. Exploratory Data Analysis
+
+```{r}
+
+```
+
+
+
+
+#3. Methods
+
+
+```{r}
+
+```
+
+#4. Analysis and Results
+
+
+
+```{r}
+
+```
+
+#5. Conclusion
+
+
+
+
+
+
+#6. References
