@@ -16,7 +16,7 @@ lfsp <- read_dta("lfsp_jm17_eul.dta")
 ```
 
 #2. Exploratory Data Analysis
-
+## Clean dataset
 ```{r}
 
 selected <- lfsp %>% select(MARSTA,RELIG11,SEX,AGE,INDE07M,BANDG,ETHGBEUL,HIQUL15D,HIGHO)
@@ -58,6 +58,7 @@ selected %>% group_by(HIGHO)%>% summarise(count=n())
 ```
 
  
+## Combine categorical dataset
 
 
 #3. Methods
