@@ -1,0 +1,54 @@
+---
+title: "QLFS Summary Table"
+author: "Wenyu"
+date: "26/09/2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load data, echo=FALSE}
+library(haven)
+qlfs <- read_dta("qlfs13q1-q4.dta")
+library(dplyr)
+library(knitr)
+library(ggplot2)
+```
+
+## Data type
+The data are labelled, to view the labels 
+```{r}
+# Install pacakges
+install.packages("labelled")
+library(labelled)
+# View all the labels
+var_label(qlfs)
+
+# View a specific label for a variabel
+
+```
+
+## Age 
+Age of respondent
+```{r age table}
+agetable <- qlfs %>% group_by(age) %>% summarise(count=n())
+#kable(agetable)
+# Show the summary table for age, as range in 0-99, the table is quite long
+ggplot(agetable, aes(x=age,y=count))+geom_bar(stat='identity')
+```
+
+
+## Country
+Country within UK
+
+```{r}
+countrytable <- qlfs %>% group_by(country) %>% summarise(count=n())
+countrytable$Labels <- c('England','Wales','Scotland','Scotland North of Caledonian','Northern Ireland')
+colnames(countrytable) <- c('Country','Count','Labels')
+kable(countrytable)
+```
+
+
+## 
