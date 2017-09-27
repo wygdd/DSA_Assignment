@@ -41,10 +41,10 @@ selected <- selected[!selected$INDE07M==-8,]
 selected <- selected[!selected$ETHGBEUL==-8 & !selected$ETHGBEUL==-9,] 
 val_labels(selected$ETHGBEUL)
 
-#HIQUAL15D
+#HIQUL15D
 selected <- selected[!selected$HIQUL15D==-8 & !selected$HIQUL15D==-9,] 
 
-#HIGHHO
+#HIGHO
 selected <- selected[!selected$HIGHO==-8,] 
 
 #BANDG
@@ -97,14 +97,17 @@ selected$INDE07M <- factor(selected$INDE07M,levels = c(1,2,3,4),labels = c('Dist
 
 #ETHGBEUL
 selected$ETHGBEUL <- ifelse(selected$ETHGBEUL== 1 |selected$ETHGBEUL== 2 |selected$ETHGBEUL== 3 ,1,selected$ETHGBEUL)
+selected$ETHGBEUL <- ifelse(selected$ETHGBEUL== 5 |selected$ETHGBEUL== 6|selected$ETHGBEUL== 7|selected$ETHGBEUL== 8|selected$ETHGBEUL== 9,2,selected$ETHGBEUL)
 selected$ETHGBEUL <- ifelse(selected$ETHGBEUL==10,3,selected$ETHGBEUL)
-selected$ETHGBEUL <- ifelse(selected$ETHGBEUL== 4| selected$ETHGBEUL== 11)
+selected$ETHGBEUL <- ifelse(selected$ETHGBEUL== 4| selected$ETHGBEUL== 11,4,selected$ETHGBEUL)
 
-#HIQUAL15D
+selected$ETHGBEUL <-factor(selected$ETHGBEUL, levels = c(1,2,3,4),c('White','Asian','Black','Other')) 
 
+#HIQUL15D
+selected$HIQUL15D
 
-#HIGHHO
-
+#HIGHO
+selected$HIGHO
 
 #BANDG
 ```
