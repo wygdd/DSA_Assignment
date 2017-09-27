@@ -85,7 +85,7 @@ selected$INDE07M <- ifelse(selected$INDE07M==7, 2,selected$INDE07M)
 selected$INDE07M <- ifelse(selected$INDE07M==8, 3,selected$INDE07M)
 
 #--- Add labels for variabels
-library(labelled)
+#library(labelled)
 #var_label(selected$INDE07M) <- "Industry sector in main job"
 #val_label(selected$INDE07M,1)<-"Distribution, hotels and restaurants"
 #val_label(selected$INDE07M,2) <- "Banking and Finance"
@@ -104,11 +104,14 @@ selected$ETHGBEUL <- ifelse(selected$ETHGBEUL== 4| selected$ETHGBEUL== 11,4,sele
 selected$ETHGBEUL <-factor(selected$ETHGBEUL, levels = c(1,2,3,4),c('White','Asian','Black','Other')) 
 
 #HIQUL15D
-selected$HIQUL15D
+selected$HIQUL15D 
+
 
 #HIGHO
-selected$HIGHO
+selected$HIGHO <- ifelse(selected$HIGHO == 1|selected$HIGHO == 2 |selected$HIGHO == 3,1,selected$HIGHO)
+selected$HIGHO <- ifelse(selected$HIGHO == 4 | selected$HIGHO==5|selected$HIGHO==-9,2,selected$HIGHO)
 
+selected$HIGHO <- factor(selected$HIGHO, levels=c(1,2),c('Yes','Other'))
 #BANDG
 ```
 
