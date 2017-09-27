@@ -1,0 +1,196 @@
+---
+title: "Labor Force Survey 2017"
+author: "Bieske, Kibsgaard, Laouiti, Tan, Wenyu, Zhang"
+date: "26/09/2017"
+output: pdf_document
+---
+#1. Introduction
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(haven)
+lfsp <- read_dta("lfsp_jm17_eul.dta")
+```
+
+#2. Exploratory Data Analysis
+## 2.1 Clean dataset
+```{r}
+
+selected <- lfsp %>% select(MARSTA,RELIG11,SEX,AGE,INDE07M,BANDG,ETHGBEUL,HIQUL15D,HIGHO)
+
+#AGE
+
+#SEX
+selected <- selected[!selected$RELIG11==-8,] 
+
+# MARSTA
+library(dplyr)
+selected <- selected[!selected$MARSTA==-9,] 
+#drop9 <- lfsp %>% filter(!MARSTA==-9)
+
+#RELIG11
+selected <- selected[!selected$RELIG11==-8,] 
+
+#INDE07M
+selected <- selected[!selected$INDE07M==-8,] 
+
+#ETHGBEUL
+selected <- selected[!selected$ETHGBEUL==-8 & !selected$ETHGBEUL==-9,] 
+val_labels(selected$ETHGBEUL)
+
+#HIQUAL15D
+selected <- selected[!selected$HIQUL15D==-8 & !selected$HIQUL15D==-9,] 
+
+#HIGHHO
+selected <- selected[!selected$HIGHO==-8,] 
+
+#BANDG
+selected <- selected[!selected$BANDG==1 & !selected$BANDG==2 & !selected$BANDG==3 & !selected$BANDG==-8 &!selected$BANDG==-9,] 
+
+selected %>% group_by(HIGHO)%>% summarise(count=n())
+
+```
+
+ 
+## 2.2 Combine categorical dataset
+```{r}
+#AGE
+
+#SEX
+# Label sex
+library(labelled)
+var_label(selected$SEX) <- "Sex of respondent"
+val_label(selected$SEX,1) <- "Male"
+val_label(selected$SEX,2) <- "Female"
+selected$SEX <- factor(selected$SEX,levels=c(1,2),labels = c('Male','Female'))
+
+# MARSTA
+selected$MARSTA <- ifelse(!selected$MARSTA==1 & !selected$MARSTA==2,3,selected$MARSTA)
+selected$MARSTA <- factor(selected$MARSTA, levels=c(1,2,3),labels = c('Single','Married','Other'))
+
+#RELIG11
+selected$RELIG11 <- ifelse(selected$RELIG11 == 1, 1 ,2)
+selected$RELIG11 <- factor(selected$RELIG11, levels=c(1,2),labels = c('No','Yes'))
+
+#INDE07M
+#--- Combine 1,2,3,4,6,9 -->4
+selected$INDE07M <- ifelse(selected$INDE07M == 1 | selected$INDE07M == 2 |selected$INDE07M == 3 | selected$INDE07M == 4 | selected$INDE07M == 6 |selected$INDE07M == 9, 4,selected$INDE07M)
+
+#--- Replace 5-->1, 7-->2, 8-->3
+selected$INDE07M <- ifelse(selected$INDE07M==5, 1,selected$INDE07M)
+selected$INDE07M <- ifelse(selected$INDE07M==7, 2,selected$INDE07M)
+selected$INDE07M <- ifelse(selected$INDE07M==8, 3,selected$INDE07M)
+
+#--- Add labels for variabels
+library(labelled)
+#var_label(selected$INDE07M) <- "Industry sector in main job"
+#val_label(selected$INDE07M,1)<-"Distribution, hotels and restaurants"
+#val_label(selected$INDE07M,2) <- "Banking and Finance"
+#val_label(selected$INDE07M,3) <- "Public admin, education, health"
+#val_label(selected$INDE07M,4) <- "Other"
+
+#--- Change to factor
+selected$INDE07M <- factor(selected$INDE07M,levels = c(1,2,3,4),labels = c('Distribution, hotels and restaurants','Banking and Finance','Public admin, education, health','Other'))
+
+#ETHGBEUL
+selected$ETHGBEUL <- ifelse(selected$ETHGBEUL== 1 |selected$ETHGBEUL== 2 |selected$ETHGBEUL== 3 ,1,selected$ETHGBEUL)
+selected$ETHGBEUL <- ifelse(selected$ETHGBEUL==10,3,selected$ETHGBEUL)
+selected$ETHGBEUL <- ifelse(selected$ETHGBEUL== 4| selected$ETHGBEUL== 11)
+
+#HIQUAL15D
+
+
+#HIGHHO
+
+
+#BANDG
+```
+
+
+```{r}
+
+
+value_vec <- c('1.1','1.10','1.11','1.12','1.13','1.14','1.15','1.16','1.17','1.18','1.19','1.2','1.20','1.21','1.22','1.23','1.24','1.25','1.26','1.27','1.28','1.29','1.3','1.30','1.31','1.32','1.33','1.34','1.4','1.5','1.6','1.7','1.8','1.9','2.1','2.10','2.11','2.12','2.13','2.14','2.15','2.16','2.17','2.18','2.19','2.2','2.20','2.21','2.22','2.23','2.24','2.25','2.26','2.27','2.28','2.29','2.3','2.30','2.31','2.32','2.33','2.34','2.4','2.5','2.6','2.7','2.8','2.9',"3.10","3.11","3.12","3.13","3.14","3.15",
+          "3.16","3.17","3.18","3.19","3.20","3.21","3.22",
+          "3.23","3.24","3.25","3.26","3.27","3.28","3.29","3.30",
+          "3.31","3.32","3.3","3.4","3.5","3.6","3.7","3.8","3.9","3.2",
+          "3.34")
+
+a1<-seq(4249.5,4749.5,500)
+a2 <- seq(5499.5,12499.5,1000)
+a3<- 249.5
+a4 <- seq(13499.5,19499.5,1000)
+a5 <-seq(21499.5,27499.5,3000)
+a6 <- 749.5
+a7 <- seq(30499.5,39499.5,3000)
+a8 <- 41000
+a9 = seq(1249.5,3749.5,500)
+label_vec <- c(0,a1,a2,a3,a4,a5,a6,a7,a8,a9) 
+
+c1 <- c(0) 
+   
+c2 <- c(seq(424.5, 674.5, 50))
+c3 <- c(seq(749.5, 1049.5, 100))
+c4 <- c(24.5)
+c5 <- c(seq(1149.5, 1949.5, 100))
+c6 <- c(2099.5)
+c7 <- c(74.5)
+c8 <- c(2349.5)
+c9 <- c(seq(2749.5, 3749.5, 500))
+c10 <- c(4000)
+c11 <- c(seq(124.5, 374.5, 50))
+
+
+month_values =  c(c1, c2, c3,  c4, c5, c6, c7, c8, c9, c10, c11)
+
+months_anual = month_values*12
+
+cl1=(seq(84.5,104.5,10))*52
+cl2=117*52
+cl3=(seq(137,487,25))*52
+cl4=(seq(524.5,674.5,50))*52
+# for 3.3 to 3.9
+cl5=(seq(14.5,74.5,10))*52
+# for 3.2
+cl6=5*52
+# for 3.34 weekly 750 or more
+cl7 = 750 *52
+clweek=c(cl1,cl2,cl3,cl4,cl5,cl6,cl7)
+
+salay_anual_all = c(label_vec,months_anual,clweek)
+
+
+salary_cont = cbind(value_vec,salay_anual_all)
+salary_index_matching=as.data.frame(salary_cont)
+colnames(salary_index_matching)=c('key_value','salary_mean')
+
+```
+
+
+
+#3. Methods
+
+
+```{r}
+
+```
+
+#4. Analysis and Results
+
+
+
+```{r}
+
+```
+
+#5. Conclusion
+
+
+
+
+
+
+#6. References
