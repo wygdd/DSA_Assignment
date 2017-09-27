@@ -60,10 +60,14 @@ selected %>% group_by(HIGHO)%>% summarise(count=n())
  
 ## 2.2 Combine categorical dataset
 ```{r}
+
 # MARSTA
+selected$MARSTA <- ifelse(!selected$MARSTA==1 & !selected$MARSTA==2,3,selected$MARSTA)
+selected$MARSTA <- factor(selected$MARSTA, levels=c(1,2,3),labels = c('Single','Married','Other'))
 
 #RELIG11
-
+selected$RELIG11 <- ifelse(selected$RELIG11 == 1, 1 ,2)
+selected$RELIG11 <- factor(selected$RELIG11, levels=c(1,2),labels = c('No','Yes'))
 
 #SEX
 # Label sex
@@ -71,6 +75,8 @@ library(labelled)
 var_label(selected$SEX) <- "Sex of respondent"
 val_label(selected$SEX,1) <- "Male"
 val_label(selected$SEX,2) <- "Female"
+
+selected$SEX <- factor(selected$SEX,levels=c(1,2),labels = c('Male','Female'))
 
 #AGE
 
@@ -85,11 +91,11 @@ selected$INDE07M <- ifelse(selected$INDE07M==8, 3,selected$INDE07M)
 
 # Add labels for variabels
 library(labelled)
-var_label(selected$INDE07M) <- "Industry sector in main job"
-val_label(selected$INDE07M,1)<-"Distribution, hotels and restaurants"
-val_label(selected$INDE07M,2) <- "Banking and Finance"
-val_label(selected$INDE07M,3) <- "Public admin, education, health"
-val_label(selected$INDE07M,4) <- "Other"
+#var_label(selected$INDE07M) <- "Industry sector in main job"
+#val_label(selected$INDE07M,1)<-"Distribution, hotels and restaurants"
+#val_label(selected$INDE07M,2) <- "Banking and Finance"
+#val_label(selected$INDE07M,3) <- "Public admin, education, health"
+#val_label(selected$INDE07M,4) <- "Other"
 
 # Change to factor
 selected$INDE07M <- factor(selected$INDE07M,levels = c(1,2,3,4),labels = c('Distribution, hotels and restaurants','Banking and Finance','Public admin, education, health','Other'))
