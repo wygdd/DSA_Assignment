@@ -22,42 +22,53 @@ library(dplyr)
 ```{r clean dataset}
 
 selected <- alldata %>% select(MARSTA,RELIG11,SEX,AGE,INDE07M,
-                            BANDG,ETHGBEUL,HIQUL15D,HIGHO)
+                            BANDG,ETHGBEUL,HIQUL15D,MPNR02,
+                            REGWKR,SC10MMJ,TOTUS2)
 
 #AGE
 
 #SEX
 
-# MARSTA
+#MARSTA
 selected <- selected[!selected$MARSTA==-9,] 
-
-#RELIG11
-selected <- selected[!selected$RELIG11==-8,] 
 
 #INDE07M
 selected <- selected[!selected$INDE07M==-8,] 
 
-#ETHGBEUL
-selected <- selected[!selected$ETHGBEUL==-8 & !selected$ETHGBEUL==-9,] 
-
 #HIQUL15D
 selected <- selected[!selected$HIQUL15D==-8 & !selected$HIQUL15D==-9 & !selected$HIQUL15D==7,] 
-
-#HIGHO
-selected <- selected[!selected$HIGHO==-8,] 
 
 #BANDG
 selected <- selected[!selected$BANDG==1 & !selected$BANDG==2 & !selected$BANDG==3 & !selected$BANDG==-8 &!selected$BANDG==-9,] 
 
+#MPNR02
+selected <-  selected[!selected$MPNR02 ==-8 & !selected$MPNR02 ==-9,]
+
+#REGWKR
+selected <- selected[!selected$REGWKR == -8 
+                     & !selected$REGWKR ==-9 
+                     & !selected$REGWKR ==2,]
+
+#SC10MMJ
+selected <- selected[!selected$REGWKR == -8 
+                     & !selected$REGWKR ==-9,]
+
 ```
 
 ```{r}
-# Find New Variables
+# Less significant Variables
 
-#
-temp <- selected %>% group_by(URESMC) %>% summarise(n())
+#temp <- selected %>% group_by(MPNR02) %>% summarise(n())
 
-#
+#RELIG11
+selected <- selected[!selected$RELIG11==-8,] 
+
+#ETHGBEUL
+selected <- selected[!selected$ETHGBEUL==-8 & !selected$ETHGBEUL==-9,] 
+
+#HIGHO
+#selected <- selected[!selected$HIGHO==-8,] 
+
 ```
 
 
@@ -65,7 +76,7 @@ temp <- selected %>% group_by(URESMC) %>% summarise(n())
 
 ```{r}
 # Create dataset qlfs, which combines 
-qlfs <- selected
+qlfs <- as.data.frame(selected)
 #AGE
 
 #SEX
@@ -74,9 +85,6 @@ qlfs <- selected
 # MARSTA
 qlfs$MARSTA <- ifelse(!qlfs$MARSTA==1 & 
                       !qlfs$MARSTA==2, 3 , qlfs$MARSTA)
-
-#RELIG11
-qlfs$RELIG11 <- ifelse(qlfs$RELIG11 == 1, 1 ,2)
 
 
 #INDE07M
@@ -91,20 +99,6 @@ qlfs$INDE07M <- ifelse( qlfs$INDE07M == 7, 2, qlfs$INDE07M)
 qlfs$INDE07M <- ifelse( qlfs$INDE07M == 8, 3, qlfs$INDE07M)
 
 
-#ETHGBEUL
-qlfs$ETHGBEUL <- ifelse(  qlfs$ETHGBEUL== 1 
-                          |qlfs$ETHGBEUL== 2 
-                          |qlfs$ETHGBEUL== 3, 1, qlfs$ETHGBEUL)
-qlfs$ETHGBEUL <- ifelse(  qlfs$ETHGBEUL == 5 
-                           |qlfs$ETHGBEUL== 6
-                           |qlfs$ETHGBEUL== 7
-                           |qlfs$ETHGBEUL== 8
-                           |qlfs$ETHGBEUL== 9,  2, qlfs$ETHGBEUL)
-qlfs$ETHGBEUL <- ifelse( qlfs$ETHGBEUL == 10, 3, qlfs$ETHGBEUL)
-qlfs$ETHGBEUL <- ifelse( qlfs$ETHGBEUL == 4
-                           |qlfs$ETHGBEUL== 11, 4, qlfs$ETHGBEUL)
-
-
 #HIQUL15D
 qlfs$HIQUL15D <- ifelse( qlfs$HIQUL15D == 1
                             &qlfs$HIQUL15D == 2, 1, qlfs$HIQUL15D ) 
@@ -114,13 +108,6 @@ qlfs$HIQUL15D <- ifelse( qlfs$HIQUL15D == 5, 4, qlfs$HIQUL15D)
 qlfs$HIQUL15D <- ifelse( qlfs$HIQUL15D == 6, 5, qlfs$HIQUL15D)
 
 
-#HIGHO
-qlfs$HIGHO <- ifelse( qlfs$HIGHO  == 1
-                          |qlfs$HIGHO == 2 
-                          |qlfs$HIGHO == 3, 1, qlfs$HIGHO)
-qlfs$HIGHO <- ifelse( qlfs$HIGHO  == 4
-                          |qlfs$HIGHO == 5
-                          |qlfs$HIGHO ==-9, 2, qlfs$HIGHO)
 
 #BANDG
 value_vec <- c('1.1','1.10','1.11','1.12','1.13','1.14','1.15','1.16','1.17',
@@ -186,12 +173,83 @@ salary_dict$key <- as.character(salary_dict$key)
 for (i in 1:nrow(qlfs)){
   qlfs$BANDG[i] <- salary_dict$value[salary_dict$key==qlfs$BANDG[i]]
 }
+qlfs$BANDG <- as.numeric(qlfs$BANDG)
+
+# MPNR02
+qlfs$MPNR02 <- ifelse(qlfs$MPNR02 == 1
+                      |qlfs$MPNR02 == 2
+                      |qlfs$MPNR02 == 3
+                      |qlfs$MPNR02 == 4
+                      |qlfs$MPNR02 == 5, 1 , qlfs$MPNR02)
+qlfs$MPNR02 <- ifelse(qlfs$MPNR02 == 6
+                      |qlfs$MPNR02 == 7
+                      |qlfs$MPNR02 == 8 , 2, qlfs$MPNR02)
+qlfs$MPNR02 <- ifelse(qlfs$MPNR02 == 9, 3, qlfs$MPNR02)
+
+
+#REGWKR
+if(FALSE){
+qlfs$REGWKR <- ifelse(qlfs$REGWKR  == 20
+                      |qlfs$REGWKR == 21, 1,qlfs$REGWKR)
+
+qlfs$REGWKR <- ifelse(qlfs$REGWKR  == 1, 2, qlfs$REGWKR)
+qlfs$REGWKR <- ifelse(qlfs$REGWKR  ==16
+                      |qlfs$REGWKR ==17
+                      |qlfs$REGWKR ==18, 3, qlfs$REGWKR)
+
+qlfs$REGWKR <- ifelse(qlfs$REGWKR  == 3
+                      |qlfs$REGWKR ==4
+                      |qlfs$REGWKR ==5,   4, qlfs$REGWKR)
+qlfs$REGWKR <- ifelse(qlfs$REGWKR  == 6,  5, qlfs$REGWKR)
+qlfs$REGWKR <- ifelse(qlfs$REGWKR  == 14
+                      |qlfs$REGWKR == 15, 6, qlfs$REGWKR)
+qlfs$REGWKR <- ifelse(qlfs$REGWKR  == 19, 8, qlfs$REGWKR)
+qlfs$REGWKR <- ifelse(qlfs$REGWKR  == 8
+                      |qlfs$REGWKR == 9
+                      |qlfs$REGWKR == 11 , 9, qlfs$REGWKR)
+qlfs$REGWKR <- ifelse(qlfs$REGWKR  ==13, 10 ,qlfs$REGWKR)
+qlfs$REGWKR <- ifelse(qlfs$REGWKR  ==12, 11 ,qlfs$REGWKR)
+qlfs$REGWKR <- ifelse(qlfs$REGWKR  ==23, 12 ,qlfs$REGWKR)
+qlfs$REGWKR <- ifelse(qlfs$REGWKR  ==22, 13 ,qlfs$REGWKR)
+}
+
+
+
+#SC10MMJ
+
 ```
+
+```{r}
+#RELIG11
+qlfs$RELIG11 <- ifelse(qlfs$RELIG11 == 1, 1 ,2)
+#ETHGBEUL
+qlfs$ETHGBEUL <- ifelse(  qlfs$ETHGBEUL== 1 
+                          |qlfs$ETHGBEUL== 2 
+                          |qlfs$ETHGBEUL== 3, 1, qlfs$ETHGBEUL)
+qlfs$ETHGBEUL <- ifelse(  qlfs$ETHGBEUL == 5 
+                           |qlfs$ETHGBEUL== 6
+                           |qlfs$ETHGBEUL== 7
+                           |qlfs$ETHGBEUL== 8
+                           |qlfs$ETHGBEUL== 9,  2, qlfs$ETHGBEUL)
+qlfs$ETHGBEUL <- ifelse( qlfs$ETHGBEUL == 10, 3, qlfs$ETHGBEUL)
+qlfs$ETHGBEUL <- ifelse( qlfs$ETHGBEUL == 4
+                           |qlfs$ETHGBEUL== 11, 4, qlfs$ETHGBEUL)
+
+# #HIGHO
+# qlfs$HIGHO <- ifelse( qlfs$HIGHO  == 1
+#                           |qlfs$HIGHO == 2 
+#                           |qlfs$HIGHO == 3, 1, qlfs$HIGHO)
+# qlfs$HIGHO <- ifelse( qlfs$HIGHO  == 4
+#                           |qlfs$HIGHO == 5
+#                           |qlfs$HIGHO ==-9, 2, qlfs$HIGHO)
+
+```
+
 
 ## 2.2 Label categorical variables
 ```{r}
 # Create dataset qlfsfac, which change all the categorical variable of qlfs to factor
-facQlfs <- qlfs
+facQlfs <- as.data.frame(qlfs)
 
 #AGE
 
@@ -231,28 +289,59 @@ facQlfs$HIQUL15D <- factor( facQlfs$HIQUL15D,
                                         'Secondary School', 
                                         'Other',
                                         'Non'))
-#HIGHO
-facQlfs$HIGHO <- factor(facQlfs$HIGHO, 
-                         levels=c(1,2),
-                         c('Yes','Other'))
+# #HIGHO
+# facQlfs$HIGHO <- factor(facQlfs$HIGHO, 
+#                          levels=c(1,2),
+#                          c('Yes','Other'))
 
+#MPNR02
+facQlfs$MPNR02 <- factor(facQlfs$MPNR02,
+                         levels=c(1,2,3),
+                         c('Under 50',
+                           'Under 500',
+                           'Over 500'))
+
+#REGWKR
+facQlfs$REGWKR <- factor(facQlfs$REGWKR,
+                         levels = c(1:13),
+                         c('Scotland',
+                           'North East',
+                           'North West',
+                           'Yorkshire and the Humber',
+                           'East Midlands',
+                           'West Midlands',
+                           'East of England',
+                           'Wales',
+                           'London',
+                           'South West',
+                           'South East',
+                           'Outside UK',
+                           'Northern Ireland'))
+
+
+#SC10MMJ
+facQlfs$SC10MMJ <- factor(facQlfs$SC10MMJ,
+                          levels=c(1:9),
+                          c('Managers, Directors and Senior Officials',
+                            'Professional',
+                            'Associate Professional and Technical',
+                            'Administrative and Secretarial',
+                            'Skilled Trades',
+                            'Caring, Leisure and Other Service',
+                            'Sales and Customer Service',
+                            'Process, Plant and Machine Operatives',
+                            'Elementary'))
 ```
 
 
 #3. Linear Regression
 ```{r}
-# Use numeric variables for linear regression
-qlfs.lm <- lm(BANDG ~ HIQUL15D + SEX + INDE07M + MARSTA  ,data=qlfs)
-summary(qlfs.lm)
-
-```
-
-
-
-```{r}
 # Use factor variables for linear regression
-facQlfs.lm <- lm(BANDG ~ HIQUL15D + SEX + INDE07M + MARSTA,data=facQlfs)
+facQlfs.lm <- lm(BANDG ~ HIQUL15D + SEX + 
+                   INDE07M + MARSTA + 
+                   MPNR02 + SC10MMJ,data=facQlfs)
 summary(facQlfs.lm)
+
 ```
 
 #4. Analysis and Results
@@ -265,21 +354,31 @@ library(ggplot2)
 library(dplyr)
 
 # Bar chart
-ggplot(facQlfs, aes(x=SEX,y=Salary,col=SEX))+geom_boxplot()+labs(title='Salary distribution of Gender',x='Sex')+theme(plot.title = element_text(hjust = 0.5))
+ggplot(facQlfs, aes(x=SEX,y=BANDG,col=SEX))+geom_boxplot()+labs(title='Salary distribution of Gender',x='Sex')+theme(plot.title = element_text(hjust = 0.5))
 
-ggplot(facQlfs, aes(x=INDE07M,y=Salary,col=INDE07M))+geom_boxplot()+labs(title='Salary distribution of Industry')+theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))
+ggplot(facQlfs, aes(x=INDE07M,y=BANDG,col=INDE07M))+geom_boxplot()+labs(title='Salary distribution of Industry')+theme(plot.title = element_text(hjust = 0.5), axis.text = element_text(angle= 45, hjust = 0.9))
 
-ggplot(facQlfs, aes(x=MARSTA,y=Salary,col=MARSTA))+geom_boxplot()+labs(title='Salary distribution of Maritual')+theme(plot.title = element_text(hjust = 0.5))
+ggplot(facQlfs, aes(x=MARSTA,y=BANDG,col=MARSTA))+geom_boxplot()+labs(title='Salary distribution of Maritual')+theme(plot.title = element_text(hjust = 0.5))
+
+ggplot(facQlfs, aes(x=HIQUL15D,y=BANDG,col=HIQUL15D))+geom_boxplot()+labs(title='Salary distribution of Industry')+theme(plot.title = element_text(hjust = 0.5), axis.text = element_text(angle= 45, hjust = 0.9))
+
+ggplot(facQlfs, aes(x=MPNR02,y=BANDG,col=MPNR02))+geom_boxplot()+labs(title='Salary distribution of Employee numbers')+theme(plot.title = element_text(hjust = 0.5))
+
+ggplot(facQlfs, aes(x=REGWKR,y=BANDG,col=REGWKR))+geom_boxplot()+labs(title='Salary distribution of Region of work')+theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))
+
+ggplot(facQlfs, aes(x=SC10MMJ,y=BANDG,col=SC10MMJ))+geom_boxplot()+labs(title='Salary distribution of Region of work')+theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))
 
 # Scatter plot
-ggplot(facQlfs,aes(x=AGE,y=Salary,col=SEX))+geom_point()+ labs(title='Annually Salary distribution over age')+ theme(plot.title = element_text(hjust = 0.5))
+ggplot(facQlfs,aes(x=AGE,y=BANDG,col=SEX))+geom_point()+ labs(title='Annually Salary distribution over age')+ theme(plot.title = element_text(hjust = 0.5))
 
-ggplot(facQlfs, aes(x=AGE,y=Salary,col=MARSTA))+geom_point(stat='identity')
+ggplot(facQlfs, aes(x=AGE,y=BANDG,col=MARSTA))+geom_point(stat='identity')
 
-ggplot(facQlfs, aes(x=AGE,y=Salary,col=HIQUL15D))+geom_point()+labs(title='Salary distribution of Highest Education',x='Age')+theme(plot.title = element_text(hjust = 0.5))
+ggplot(facQlfs, aes(x=AGE,y=BANDG,col=HIQUL15D))+geom_point()+labs(title='Salary distribution of Highest Education',x='Age')+theme(plot.title = element_text(hjust = 0.5))
 
 
-ggplot(facQlfs, aes(x=AGE,y=Salary,col=ETHGBEUL))+geom_point()+labs(title='Salary distribution of Industry',x='Age')+theme(plot.title = element_text(hjust = 0.5))
+ggplot(facQlfs, aes(x=AGE,y=BANDG,col=ETHGBEUL))+geom_point()+labs(title='Salary distribution of Industry',x='Age')+theme(plot.title = element_text(hjust = 0.5))
+
+ggplot(facQlfs, aes(x=AGE,y=BANDG,col=MPNR02))+geom_point()+labs(title='Salary distribution of Employee numbers')+theme(plot.title = element_text(hjust = 0.5))
 
 
 ```
