@@ -1,0 +1,371 @@
+---
+title: "qlfs_organise"
+author: "Wenyu"
+date: "06/10/2017"
+output:
+  html_document: default
+  pdf_document: default
+---
+#1. Introduction
+
+
+#2. Methods
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load data, echo=FALSE,message=FALSE}
+library(dplyr)
+library(haven)
+alldata <- read_dta("lfsp_jm17_eul.dta")
+```
+
+## 2.1 Data Preparation 
+```{r clean dataset}
+
+selected <- alldata %>% select(AGE,SEX,INDE07M,HIQUL15D,MPNR02,SC10MMJ,BANDG)
+
+colnames(selected) <- c("Age","Sex","Industry","Education",
+                        "NumEmployee","Occupation","Salary") 
+
+#########################################
+###--------Dependent Varaibles-------####
+#########################################
+
+#Salary
+selected <- selected[!selected$Salary==1 & !selected$Salary==2 & !selected$Salary==3 & !selected$Salary==-8 &!selected$Salary==-9,] 
+
+
+###########################################
+###--------Independent Variables-------####
+###########################################
+
+#Age
+
+#Sex
+
+#Industry
+selected <- selected[!selected$Industry==-8,] 
+
+#Education
+selected <- selected[!selected$Education  ==-8 
+                    &!selected$Education  ==-9 
+                    &!selected$Education  == 7,] 
+
+#NumEmployee
+selected <- selected[!selected$NumEmployee ==-8 
+                    &!selected$NumEmployee ==-9,]
+
+
+#Occupation
+selected <- selected[!selected$Occupation == -8 
+                    &!selected$Occupation == -9,]
+
+```
+
+
+```{r combine groups}
+# Create dataset qlfs to combine groups, the processed dataset qlfs contains numeric data 
+qlfs <- as.data.frame(selected)
+
+#########################################
+###--------Dependent Varaibles-------####
+#########################################
+
+#BANDG
+value_vec <- c('1.1','1.10','1.11','1.12','1.13','1.14','1.15','1.16','1.17',
+               '1.18','1.19','1.2','1.20','1.21','1.22','1.23','1.24','1.25',
+               '1.26','1.27','1.28','1.29','1.3','1.30','1.31','1.32','1.33',
+               '1.34','1.4','1.5','1.6','1.7','1.8','1.9',
+               '2.1','2.10','2.11','2.12','2.13','2.14','2.15','2.16','2.17',
+               '2.18','2.19','2.2','2.20','2.21','2.22','2.23','2.24','2.25',
+               '2.26','2.27','2.28','2.29','2.3','2.30','2.31','2.32','2.33',
+               '2.34','2.4','2.5','2.6','2.7','2.8','2.9',
+               "3.10","3.11","3.12","3.13","3.14","3.15","3.16","3.17","3.18",
+               "3.19","3.20","3.21","3.22","3.23","3.24","3.25","3.26","3.27",
+               "3.28","3.29","3.30","3.31","3.32","3.3","3.4","3.5","3.6",
+               "3.7","3.8","3.9","3.2","3.34")
+#-- Annually
+a1  <- 0 
+a2  <- seq(4249.5,4749.5,500)
+a3  <- seq(5499.5,12499.5,1000)
+a4  <- 249.5
+a5  <- seq(13499.5,19499.5,1000)
+a6  <-seq(21499.5,27499.5,3000)
+a7  <- 749.5
+a8  <- seq(30499.5,39499.5,3000)
+a9  <- 41000
+a10 <- seq(1249.5,3749.5,500)
+annual <- c(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) 
+
+#-- Monthly 
+m1  <- 0 
+m2  <- seq(424.5, 674.5, 50)
+m3  <- seq(749.5, 1049.5, 100)
+m4  <- 24.5
+m5  <- seq(1149.5, 1949.5, 100)
+m6  <- 2099.5
+m7  <- 74.5
+m8  <- 2349.5
+m9  <- seq(2749.5, 3749.5, 500)
+m10 <- 4000
+m11 <- seq(124.5, 374.5, 50)
+month_values <- c(m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11)
+months_annual <- month_values*12
+
+#-- Weekly
+w1 <- seq(84.5,104.5,10)
+w2 <- 117
+w3 <- seq(137,487,25)
+w4 <- seq(524.5,674.5,50)
+w5 <- seq(14.5,74.5,10) # for 3.3 to 3.9
+w6 <- 5 # for 3.2
+w7 <- 750 # for 3.34 weekly 750 or more
+week_values <- c(w1,w2,w3,w4,w5,w6,w7)
+week_annual <- week_values * 52
+
+#-- Combine annually, monthly and weekly
+salay_all <-c(annual,months_annual,week_annual)
+salary_dict <- data.frame(key=value_vec,value=salay_all)
+salary_dict$key <- as.character(salary_dict$key)
+
+#-- Assign mean salary to qlfs$salary according to salary_dict
+for (i in 1:nrow(qlfs)){
+  qlfs$Salary[i] <- salary_dict$value[salary_dict$key==qlfs$Salary[i]]
+}
+#--BANDG of type 'character', change it to numeric
+qlfs$Salary <- as.numeric(qlfs$Salary)
+
+
+###########################################
+###--------Independent Variables-------####
+###########################################
+
+#Age
+#Continuous numbers, no need for combination
+
+#Sex
+#Two groups, male and female, no need for combination
+
+#Industry
+qlfs$Industry <- ifelse( qlfs$Industry  == 1 
+                        |qlfs$Industry == 2 
+                        |qlfs$Industry == 3 
+                        |qlfs$Industry == 4 
+                        |qlfs$Industry == 6 
+                        |qlfs$Industry == 9, 4, qlfs$Industry)
+qlfs$Industry <- ifelse( qlfs$Industry  == 5, 1, qlfs$Industry)
+qlfs$Industry <- ifelse( qlfs$Industry  == 7, 2, qlfs$Industry)
+qlfs$Industry <- ifelse( qlfs$Industry  == 8, 3, qlfs$Industry)
+
+
+#Education
+# qlfs$Education <- ifelse( qlfs$Education == 1
+#                         &qlfs$Education == 2, 1, qlfs$Education ) 
+# qlfs$Education <- ifelse( qlfs$Education == 3, 2 ,qlfs$Education)
+# qlfs$Education <- ifelse( qlfs$Education == 4, 3, qlfs$Education)
+# qlfs$Education <- ifelse( qlfs$Education == 5, 4, qlfs$Education)
+# qlfs$Education <- ifelse( qlfs$Education == 6, 5, qlfs$Education)
+
+
+# NumEmployee
+qlfs$NumEmployee <- ifelse(qlfs$NumEmployee  == 1
+                      |qlfs$NumEmployee == 2
+                      |qlfs$NumEmployee == 3
+                      |qlfs$NumEmployee == 4
+                      |qlfs$NumEmployee == 5, 1, qlfs$NumEmployee)
+qlfs$NumEmployee <- ifelse(qlfs$NumEmployee  == 6
+                      |qlfs$NumEmployee == 7
+                      |qlfs$NumEmployee == 8, 2, qlfs$NumEmployee)
+qlfs$NumEmployee <- ifelse(qlfs$NumEmployee  == 9, 3, qlfs$NumEmployee)
+
+
+#Occupation
+# No need to combine or change group catagories
+```
+
+```{r label variables}
+# Create dataset facQlfs, which change all the categorical variable of qlfs to factor with labels, in order for further linear regression.
+facQlfs <- as.data.frame(qlfs)
+
+#Age
+
+#Sex
+facQlfs$Sex <- factor( facQlfs$Sex,
+                        levels=c(1,2),
+                        labels = c('Male','Female'))
+
+
+#Industry
+facQlfs$Industry <- factor( facQlfs$Industry,
+                            levels = c(1,2,3,4),
+                            labels = c('Distribution, hotels, restaurants',
+                                       'Banking, Finance',
+                                       'Public admin, education, health',
+                                       'Other'))
+
+#Education
+facQlfs$Education <- factor( facQlfs$Education, 
+                             levels = c(1:6), 
+                             labels = c('Degree',
+                                        'Higher Education',
+                                        'A Level',
+                                        'GCSE A*-C',
+                                        'Other',
+                                        'No'))
+
+#NumEmployee
+facQlfs$NumEmployee <- factor(facQlfs$NumEmployee,
+                         levels=c(1,2,3),
+                         c('Under 50',
+                           'Under 500',
+                           'Over 500'))
+
+
+#Occupation
+facQlfs$Occupation <- factor(facQlfs$Occupation,
+                          levels=c(1:9),
+                          c('Managers, Directors, Senior Officials',
+                            'Professional',
+                            'Associate Professional, Technical',
+                            'Administrative, Secretarial',
+                            'Skilled Trades',
+                            'Caring, Leisure, Other Service',
+                            'Sales, Customer Service',
+                            'Process, Plant, Machine Operatives',
+                            'Elementary'))
+```
+
+## 2.2 Describtion of dataset
+570 observations and 7 variables
+
+## 2.3 Descriptive statistics
+#### 2.3.1 Univariate descriptive of variables
+- central tendency (mean, mode, median)
+- dispersion (range, variance, maximum, minimum, quartiles & IQR, std.)
+- frequency distribution tables
+- bar charts
+- histograms
+
+
+##### Sex
+```{r Sex,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60)}
+library(ggplot2)
+
+# Sex
+ggplot(facQlfs,aes(x=Age,y=Salary,col=Sex))+ geom_point() + labs(title='Annually Salary Distribution of Gender',x='Age',y='Salary')+ theme(plot.title = element_text(hjust = 0.5))
+
+ggplot(facQlfs, aes(x=Sex,y=Salary,col=Sex))+ geom_boxplot()+ labs(title='Annually Salary distribution of Gender',x='Sex',y='Salary')+ theme(plot.title = element_text(hjust = 0.5))
+
+ggplot(facQlfs,aes(x=Salary,col=Sex))+ geom_density() + labs(title='Annually Salary Distribution of Gender',x='Salary',y='Density')+ theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+##### Industry
+```{r Industry,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60)}
+# Industry
+ggplot(facQlfs,aes(x=Age,y=Salary,col=Industry))+ geom_point()+ labs(title='Annually Salary Distribution of Industry',x ='Age',y='Salary')+ theme(plot.title = element_text(hjust = 0.5))
+
+ggplot(facQlfs, aes(x=Industry,y=Salary,col=Industry))+ geom_boxplot()+ labs(title='Annually Salary distribution of Industry',x='Industry',y='Salary')+ theme(plot.title = element_text(hjust = 0.5), axis.text = element_text(angle= 45, hjust = 0.9))
+
+ggplot(facQlfs,aes(x=Salary,col=Industry))+ geom_density()+ labs(title='Annually Salary Distribution of Industry',x ='Salary',y='Density')+ theme(plot.title = element_text(hjust = 0.5))
+
+
+```
+
+##### Highest Education Level
+```{r Highest Educational Level,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60)}
+# Education
+ggplot(facQlfs, aes(x=Education,y=Salary,col=Education))+ geom_boxplot()+ labs(title='Annually Salary distribution of Highest Education Qualification',x='Highest Education Qualification',y='Salary')+ theme(plot.title = element_text(hjust = 0.5), axis.text = element_text(angle= 45, hjust = 0.9))
+
+ggplot(facQlfs, aes(x=Occupation,fill=Education))+ geom_bar(position=position_dodge())+ labs(title='Highest Education Qualification distribution among Occupation',x='Occupation',y='Count')+ theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 50, hjust = 0.9,size=6))
+
+ggplot(facQlfs, aes(x=Education,fill=Occupation))+ geom_bar(position=position_dodge())+ labs(title='Occupation distribution among Highest Education Qualification',x='Occupation',y='Count')+ theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))
+
+```
+
+```{r}
+# average salary of different groups
+facQlfs %>% select(Salary,Education) %>% group_by(Education) %>% summarise(mean(Salary))
+
+# degree level occupation distribution
+facQlfs %>% select(Education,Occupation) %>%  group_by(Occupation) %>% filter(Education=='Degree')  %>% summarise(percent=n()/173*100)
+
+```
+
+##### Employee Numbers in workplace
+```{r Employee Numbers in workplace,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60)}
+# NumEmployee
+ggplot(facQlfs, aes(x=Age,y=Salary,col=NumEmployee))+geom_point()+labs(title='Annually Salary distribution of Employee numbers in workplace',x='Age',y='Salary')+theme(plot.title = element_text(hjust = 0.5))
+
+ggplot(facQlfs, aes(x=NumEmployee,y=Salary,col=NumEmployee))+geom_boxplot()+labs(title='Salary distribution of Employee numbers in workplace',x='Employee Numbers',y='Salary')+theme(plot.title = element_text(hjust = 0.5))
+
+ggplot(facQlfs, aes(x=Salary,col=NumEmployee))+geom_density()+labs(title='Annually Salary distribution of Employee numbers in workplace',x='Salary',y='Density')+theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+##### Occupations
+```{r Occupations,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60)}
+# Occupation
+ggplot(facQlfs, aes(x=Age,y=Salary,col=Occupation))+geom_point()+labs(title='Annually Salary distribution of Occupations',x='Age',y='Salary')+theme(plot.title = element_text(hjust = 0.5))
+
+ggplot(facQlfs, aes(x=Occupation,y=Salary,col=Occupation))+geom_boxplot()+labs(title='Salary distribution of Occupations',x='Occupations',y='Salary')+theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))
+
+ggplot(facQlfs, aes(x=Salary))+geom_density()+labs(title='Annually Salary distribution of Occupations',x='Salary',y='Density')+theme(plot.title = element_text(hjust = 0.5))+ facet_wrap(~Occupation)
+
+```
+
+
+#### 2.3.2 Bivariate descriptive 
+occupation industry
+occupation education
+
+
+## 3. Analysis
+### 3.1  Correlation analysis
+occupation industry
+occupation education
+```{r}
+cor.test(qlfs$Education,qlfs$Occupation)
+cor.test(qlfs$Industry,qlfs$Occupation)
+```
+
+### 3.2  Hypothesis test
+#### 3.2.1 T-test
+```{r}
+caring = facQlfs %>% select(Salary,Occupation) %>% filter(Occupation=="Caring, Leisure and Other Service")
+sales = facQlfs %>% select(Salary,Occupation) %>% filter(Occupation=="Sales and Customer Service")
+elem = facQlfs %>% select(Salary,Occupation) %>% filter(Occupation=="Elementary")
+t.test(caring$Salary,sales$Salary)
+t.test(caring$Salary,elem$Salary)
+t.test(sales$Salary,elem$Salary)
+
+```
+
+
+#### 3.2.2 Chi-square test 
+```{r}
+chisq.test(table(facQlfs$Industry,facQlfs$Occupation))
+chisq.test(table(facQlfs$Education,facQlfs$Occupation))
+
+```
+
+
+### 3.3  Linear regression
+```{r linear regression 1}
+facQlfs.lm1 <- lm(Salary ~ Education + Sex + 
+                          Industry  + NumEmployee + 
+                          Occupation,  data=facQlfs)
+summary(facQlfs.lm1)
+```
+
+
+# 4. Analysis and Results
+
+#5. Conclusion
+
+
+
+
+#6. References

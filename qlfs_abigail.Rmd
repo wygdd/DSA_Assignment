@@ -13,7 +13,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r load data, echo=FALSE}
+```{r load data, echo=FALSE,message=FALSE}
 library(dplyr)
 library(haven)
 alldata <- read_dta("lfsp_jm17_eul.dta")
@@ -24,8 +24,9 @@ alldata <- read_dta("lfsp_jm17_eul.dta")
 
 selected <- alldata %>% select(MARSTA,RELIG11,SEX,AGE,INDE07M,
                             BANDG,ETHGBEUL,HIQUL15D,MPNR02,
-                            REGWKR,SC10MMJ,TOTUS2)
+                            REGWKR,SC10MMJ)
 
+colnames(selected) <- c("")
 #########################################
 ###--------Dependent Varaibles-------####
 #########################################
