@@ -22,43 +22,42 @@ alldata <- read_dta("lfsp_jm17_eul.dta")
 ## 2.1 Clean dataset
 ```{r clean dataset}
 
-selected <- alldata %>% select(MARSTA,RELIG11,SEX,AGE,INDE07M,
-                            BANDG,ETHGBEUL,HIQUL15D,MPNR02,
-                            REGWKR,SC10MMJ)
+selected <- alldata %>% select(AGE,SEX,INDE07M,HIQUL15D,MPNR02,SC10MMJ,BANDG)
 
-colnames(selected) <- c("")
+colnames(selected) <- c("Age","Sex","Industry","Education",
+                        "NumEmployee","Occupation","Salary") 
 #########################################
 ###--------Dependent Varaibles-------####
 #########################################
 
-#BANDG
-selected <- selected[!selected$BANDG==1 & !selected$BANDG==2 & !selected$BANDG==3 & !selected$BANDG==-8 &!selected$BANDG==-9,] 
+#Salary
+selected <- selected[!selected$Salary==1 & !selected$Salary==2 & !selected$Salary==3 & !selected$Salary==-8 &!selected$Salary==-9,] 
 
 
 ###########################################
 ###--------Independent Variables-------####
 ###########################################
 
-#AGE
+#Age
 
-#SEX
+#Sex
 
-#INDE07M
-selected <- selected[!selected$INDE07M==-8,] 
+#Industry
+selected <- selected[!selected$Industry==-8,] 
 
-#HIQUL15D
-selected <- selected[!selected$HIQUL15D  ==-8 
-                    &!selected$HIQUL15D  ==-9 
-                    &!selected$HIQUL15D  == 7,] 
+#Education
+selected <- selected[!selected$Education  ==-8 
+                    &!selected$Education  ==-9 
+                    &!selected$Education  == 7,] 
 
-#MPNR02
-selected <- selected[!selected$MPNR02 ==-8 
-                    &!selected$MPNR02 ==-9,]
+#NumEmployee
+selected <- selected[!selected$NumEmployee ==-8 
+                    &!selected$NumEmployee ==-9,]
 
 
-#SC10MMJ
-selected <- selected[!selected$REGWKR == -8 
-                    &!selected$REGWKR == -9,]
+#Occupation
+selected <- selected[!selected$Occupation == -8 
+                    &!selected$Occupation == -9,]
 
 ```
 
@@ -72,7 +71,7 @@ qlfs <- as.data.frame(selected)
 ###--------Dependent Varaibles-------####
 #########################################
 
-#BANDG
+#Salary
 value_vec <- c('1.1','1.10','1.11','1.12','1.13','1.14','1.15','1.16','1.17',
                '1.18','1.19','1.2','1.20','1.21','1.22','1.23','1.24','1.25',
                '1.26','1.27','1.28','1.29','1.3','1.30','1.31','1.32','1.33',
@@ -131,56 +130,56 @@ salary_dict$key <- as.character(salary_dict$key)
 
 #-- Assign mean salary to qlfs$salary according to salary_dict
 for (i in 1:nrow(qlfs)){
-  qlfs$BANDG[i] <- salary_dict$value[salary_dict$key==qlfs$BANDG[i]]
+  qlfs$Salary[i] <- salary_dict$value[salary_dict$key==qlfs$Salary[i]]
 }
-#--BANDG of type 'character', change it to numeric
-qlfs$BANDG <- as.numeric(qlfs$BANDG)
+#--Salary of type 'character', change it to numeric
+qlfs$Salary <- as.numeric(qlfs$Salary)
 
 
 ###########################################
 ###--------Independent Variables-------####
 ###########################################
 
-#AGE
+#Age
 #Continuous numbers, no need for combination
 
-#SEX
+#Sex
 #Two groups, male and female, no need for combination
 
-#INDE07M
-qlfs$INDE07M <- ifelse( qlfs$INDE07M  == 1 
-                        |qlfs$INDE07M == 2 
-                        |qlfs$INDE07M == 3 
-                        |qlfs$INDE07M == 4 
-                        |qlfs$INDE07M == 6 
-                        |qlfs$INDE07M == 9, 4, qlfs$INDE07M)
-qlfs$INDE07M <- ifelse( qlfs$INDE07M  == 5, 1, qlfs$INDE07M)
-qlfs$INDE07M <- ifelse( qlfs$INDE07M  == 7, 2, qlfs$INDE07M)
-qlfs$INDE07M <- ifelse( qlfs$INDE07M  == 8, 3, qlfs$INDE07M)
+#Industry
+qlfs$Industry <- ifelse( qlfs$Industry  == 1 
+                        |qlfs$Industry == 2 
+                        |qlfs$Industry == 3 
+                        |qlfs$Industry == 4 
+                        |qlfs$Industry == 6 
+                        |qlfs$Industry == 9, 4, qlfs$Industry)
+qlfs$Industry <- ifelse( qlfs$Industry  == 5, 1, qlfs$Industry)
+qlfs$Industry <- ifelse( qlfs$Industry  == 7, 2, qlfs$Industry)
+qlfs$Industry <- ifelse( qlfs$Industry  == 8, 3, qlfs$Industry)
 
 
-#HIQUL15D
-qlfs$HIQUL15D <- ifelse( qlfs$HIQUL15D == 1
-                        &qlfs$HIQUL15D == 2, 1, qlfs$HIQUL15D ) 
-qlfs$HIQUL15D <- ifelse( qlfs$HIQUL15D == 3, 2 ,qlfs$HIQUL15D)
-qlfs$HIQUL15D <- ifelse( qlfs$HIQUL15D == 4, 3, qlfs$HIQUL15D)
-qlfs$HIQUL15D <- ifelse( qlfs$HIQUL15D == 5, 4, qlfs$HIQUL15D)
-qlfs$HIQUL15D <- ifelse( qlfs$HIQUL15D == 6, 5, qlfs$HIQUL15D)
+#Education
+qlfs$Education <- ifelse( qlfs$Education == 1
+                        &qlfs$Education == 2, 1, qlfs$Education ) 
+qlfs$Education <- ifelse( qlfs$Education == 3, 2 ,qlfs$Education)
+qlfs$Education <- ifelse( qlfs$Education == 4, 3, qlfs$Education)
+qlfs$Education <- ifelse( qlfs$Education == 5, 4, qlfs$Education)
+qlfs$Education <- ifelse( qlfs$Education == 6, 5, qlfs$Education)
 
 
-# MPNR02
-qlfs$MPNR02 <- ifelse(qlfs$MPNR02  == 1
-                      |qlfs$MPNR02 == 2
-                      |qlfs$MPNR02 == 3
-                      |qlfs$MPNR02 == 4
-                      |qlfs$MPNR02 == 5, 1, qlfs$MPNR02)
-qlfs$MPNR02 <- ifelse(qlfs$MPNR02  == 6
-                      |qlfs$MPNR02 == 7
-                      |qlfs$MPNR02 == 8, 2, qlfs$MPNR02)
-qlfs$MPNR02 <- ifelse(qlfs$MPNR02  == 9, 3, qlfs$MPNR02)
+# NumEmployee
+qlfs$NumEmployee <- ifelse(qlfs$NumEmployee  == 1
+                      |qlfs$NumEmployee == 2
+                      |qlfs$NumEmployee == 3
+                      |qlfs$NumEmployee == 4
+                      |qlfs$NumEmployee == 5, 1, qlfs$NumEmployee)
+qlfs$NumEmployee <- ifelse(qlfs$NumEmployee  == 6
+                      |qlfs$NumEmployee == 7
+                      |qlfs$NumEmployee == 8, 2, qlfs$NumEmployee)
+qlfs$NumEmployee <- ifelse(qlfs$NumEmployee  == 9, 3, qlfs$NumEmployee)
 
 
-#SC10MMJ
+#Occupation
 # No need to combine or change group catagories
 ```
 
@@ -190,24 +189,24 @@ qlfs$MPNR02 <- ifelse(qlfs$MPNR02  == 9, 3, qlfs$MPNR02)
 # Create dataset facQlfs, which change all the categorical variable of qlfs to factor with labels, in order for further linear regression.
 facQlfs <- as.data.frame(qlfs)
 
-#AGE
+#Age
 
-#SEX
-facQlfs$SEX <- factor( facQlfs$SEX,
+#Sex
+facQlfs$Sex <- factor( facQlfs$Sex,
                         levels=c(1,2),
                         labels = c('Male','Female'))
 
 
-#INDE07M
-facQlfs$INDE07M <- factor( facQlfs$INDE07M,
+#Industry
+facQlfs$Industry <- factor( facQlfs$Industry,
                             levels = c(1,2,3,4),
                             labels = c('Distribution, hotels and restaurants',
                                        'Banking and Finance',
                                        'Public admin, education, health',
                                        'Other'))
 
-#HIQUL15D
-facQlfs$HIQUL15D <- factor( facQlfs$HIQUL15D, 
+#Education
+facQlfs$Education <- factor( facQlfs$Education, 
                              levels = c(1,2,3,4,5), 
                              labels = c('University',
                                         'College',
@@ -215,16 +214,16 @@ facQlfs$HIQUL15D <- factor( facQlfs$HIQUL15D,
                                         'Other',
                                         'Non'))
 
-#MPNR02
-facQlfs$MPNR02 <- factor(facQlfs$MPNR02,
+#NumEmployee
+facQlfs$NumEmployee <- factor(facQlfs$NumEmployee,
                          levels=c(1,2,3),
                          c('Under 50',
                            'Under 500',
                            'Over 500'))
 
 
-#SC10MMJ
-facQlfs$SC10MMJ <- factor(facQlfs$SC10MMJ,
+#Occupation
+facQlfs$Occupation <- factor(facQlfs$Occupation,
                           levels=c(1:9),
                           c('Managers, Directors and Senior Officials',
                             'Professional',
@@ -240,18 +239,18 @@ facQlfs$SC10MMJ <- factor(facQlfs$SC10MMJ,
 
 # 3. Linear Regression
 ```{r linear regression 1}
-facQlfs.lm1 <- lm(BANDG ~ HIQUL15D + SEX + 
-                          INDE07M  + MPNR02 + 
-                          SC10MMJ,  data=facQlfs)
+facQlfs.lm1 <- lm(Salary ~ Education + Sex + 
+                          Industry  + NumEmployee + 
+                          Occupation,  data=facQlfs)
 summary(facQlfs.lm1)
 ```
 
 
 
 ```{r linear regression 2}
-facQlfs.lm2 <- lm(BANDG ~ HIQUL15D + SEX + 
-                          INDE07M  + MPNR02 + 
-                          SC10MMJ  + AGE,  data=facQlfs)
+facQlfs.lm2 <- lm(Salary ~ Education + Sex + 
+                          Industry  + NumEmployee + 
+                          Occupation  + Age,  data=facQlfs)
 summary(facQlfs.lm2)
 ```
 
@@ -262,45 +261,45 @@ summary(facQlfs.lm2)
 ```{r Sex,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60)}
 library(ggplot2)
 
-# SEX
-ggplot(facQlfs,aes(x=AGE,y=BANDG,col=SEX))+ geom_point() + labs(title='Annually Salary Distribution of Gender',x='Age',y='Salary')+ theme(plot.title = element_text(hjust = 0.5))
+# Sex
+ggplot(facQlfs,aes(x=Age,y=Salary,col=Sex))+ geom_point() + labs(title='Annually Salary Distribution of Gender',x='Age',y='Salary')+ theme(plot.title = element_text(hjust = 0.5))
 
-ggplot(facQlfs, aes(x=SEX,y=BANDG,col=SEX))+ geom_boxplot()+ labs(title='Annually Salary distribution of Gender',x='Sex',y='Salary')+ theme(plot.title = element_text(hjust = 0.5))
+ggplot(facQlfs, aes(x=Sex,y=Salary,col=Sex))+ geom_boxplot()+ labs(title='Annually Salary distribution of Gender',x='Sex',y='Salary')+ theme(plot.title = element_text(hjust = 0.5))
 
 ```
 
 ## 4.2 Industry
 ```{r Industry,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60)}
-# INDE07M
-ggplot(facQlfs,aes(x=AGE,y=BANDG,col=INDE07M))+ geom_point()+ labs(title='Annually Salary Distribution of Industry',x ='Age',y='Salary')+ theme(plot.title = element_text(hjust = 0.5))
+# Industry
+ggplot(facQlfs,aes(x=Age,y=Salary,col=Industry))+ geom_point()+ labs(title='Annually Salary Distribution of Industry',x ='Age',y='Salary')+ theme(plot.title = element_text(hjust = 0.5))
 
-ggplot(facQlfs, aes(x=INDE07M,y=BANDG,col=INDE07M))+ geom_boxplot()+ labs(title='Annually Salary distribution of Industry',x='Industry',y='Salary')+ theme(plot.title = element_text(hjust = 0.5), axis.text = element_text(angle= 45, hjust = 0.9))
+ggplot(facQlfs, aes(x=Industry,y=Salary,col=Industry))+ geom_boxplot()+ labs(title='Annually Salary distribution of Industry',x='Industry',y='Salary')+ theme(plot.title = element_text(hjust = 0.5), axis.text = element_text(angle= 45, hjust = 0.9))
 ```
 
 ## 4.3 Highest Education Level
 ```{r Highest Educational Level,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60)}
-# HIQUL15D
-ggplot(facQlfs, aes(x=AGE,y=BANDG,col=HIQUL15D))+ geom_point()+ labs(title='Annually Salary distribution of Highest Education Level',x='Age',y='Salary')+ theme(plot.title = element_text(hjust = 0.5))
+# Education
+ggplot(facQlfs, aes(x=Age,y=Salary,col=Education))+ geom_point()+ labs(title='Annually Salary distribution of Highest Education Level',x='Age',y='Salary')+ theme(plot.title = element_text(hjust = 0.5))
 
-ggplot(facQlfs, aes(x=HIQUL15D,y=BANDG,col=HIQUL15D))+ geom_boxplot()+ labs(title='Annually Salary distribution of Highest Education Level',x='Highest Education Level',y='Salary')+ theme(plot.title = element_text(hjust = 0.5), axis.text = element_text(angle= 45, hjust = 0.9))
+ggplot(facQlfs, aes(x=Education,y=Salary,col=Education))+ geom_boxplot()+ labs(title='Annually Salary distribution of Highest Education Level',x='Highest Education Level',y='Salary')+ theme(plot.title = element_text(hjust = 0.5), axis.text = element_text(angle= 45, hjust = 0.9))
 ```
 
 
 ## 4.4 Employee Numbers in workplace
 ```{r Employee Numbers in workplace,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60)}
-# MPNR02
-ggplot(facQlfs, aes(x=AGE,y=BANDG,col=MPNR02))+geom_point()+labs(title='Annually Salary distribution of Employee numbers in workplace',x='Age',y='Salary')+theme(plot.title = element_text(hjust = 0.5))
+# NumEmployee
+ggplot(facQlfs, aes(x=Age,y=Salary,col=NumEmployee))+geom_point()+labs(title='Annually Salary distribution of Employee numbers in workplace',x='Age',y='Salary')+theme(plot.title = element_text(hjust = 0.5))
 
-ggplot(facQlfs, aes(x=MPNR02,y=BANDG,col=MPNR02))+geom_boxplot()+labs(title='Salary distribution of Employee numbers in workplace',x='Employee Numbers',y='Salary')+theme(plot.title = element_text(hjust = 0.5))
+ggplot(facQlfs, aes(x=NumEmployee,y=Salary,col=NumEmployee))+geom_boxplot()+labs(title='Salary distribution of Employee numbers in workplace',x='Employee Numbers',y='Salary')+theme(plot.title = element_text(hjust = 0.5))
 ```
 
 
 ## 4.5 Occupations
 ```{r Occupations,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60)}
-# SC10MMJ
-ggplot(facQlfs, aes(x=AGE,y=BANDG,col=SC10MMJ))+geom_point()+labs(title='Annually Salary distribution of Occupations',x='Age',y='Salary')+theme(plot.title = element_text(hjust = 0.5))
+# Occupation
+ggplot(facQlfs, aes(x=Age,y=Salary,col=Occupation))+geom_point()+labs(title='Annually Salary distribution of Occupations',x='Age',y='Salary')+theme(plot.title = element_text(hjust = 0.5))
 
-ggplot(facQlfs, aes(x=SC10MMJ,y=BANDG,col=SC10MMJ))+geom_boxplot()+labs(title='Salary distribution of Occupations',x='Occupations',y='Salary')+theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))
+ggplot(facQlfs, aes(x=Occupation,y=Salary,col=Occupation))+geom_boxplot()+labs(title='Salary distribution of Occupations',x='Occupations',y='Salary')+theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))
 ```
 
 
