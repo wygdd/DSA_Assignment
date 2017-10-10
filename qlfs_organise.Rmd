@@ -8,8 +8,8 @@ output:
 ---
 #1. Introduction
 
-
-#2. Methods
+#2. Theory 
+#3. Methods
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
