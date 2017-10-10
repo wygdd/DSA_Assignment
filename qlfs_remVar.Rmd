@@ -18,18 +18,19 @@ This is a temporary file to record the removed mutation of variables after linea
 # Less Significant Variables
 
 #MARSTA
+#Marital
 selected <- selected[!selected$MARSTA   == -9,] 
 
 #RELIG11
+#Religion
 selected <- selected[!selected$RELIG11  == -8,] 
 
 #ETHGBEUL
+#Ethnicity 
 selected <- selected[!selected$ETHGBEUL == -8 
                     &!selected$ETHGBEUL ==-9,] 
-#HIGHO
-selected <- selected[!selected$HIGHO ==-8,] 
-
 #REGWKR
+#Regions of place to work
 selected <- selected[!selected$REGWKR   == -8 
                      & !selected$REGWKR == -9 
                      & !selected$REGWKR ==  2,]
@@ -58,14 +59,6 @@ qlfs$ETHGBEUL <- ifelse(  qlfs$ETHGBEUL == 5
 qlfs$ETHGBEUL <- ifelse( qlfs$ETHGBEUL  == 10, 3, qlfs$ETHGBEUL)
 qlfs$ETHGBEUL <- ifelse( qlfs$ETHGBEUL  == 4
                          |qlfs$ETHGBEUL == 11, 4, qlfs$ETHGBEUL)
-
-#HIGHO
-qlfs$HIGHO <- ifelse( qlfs$HIGHO  == 1
-                      |qlfs$HIGHO == 2
-                      |qlfs$HIGHO == 3, 1, qlfs$HIGHO)
-qlfs$HIGHO <- ifelse( qlfs$HIGHO  == 4
-                      |qlfs$HIGHO == 5
-                      |qlfs$HIGHO ==-9, 2, qlfs$HIGHO)
 
 #REGWKR
 if(FALSE){
@@ -111,10 +104,6 @@ facQlfs$ETHGBEUL <-factor( facQlfs$ETHGBEUL,
                             levels = c(1,2,3,4),
                             c('White','Asian','Black','Other')) 
 
-#HIGHO
-facQlfs$HIGHO <- factor(facQlfs$HIGHO,
-                         levels=c(1,2),
-                         c('Yes','Other'))
 
 #REGWKR
 facQlfs$REGWKR <- factor(facQlfs$REGWKR,

@@ -27,8 +27,7 @@ alldata <- read_dta("lfsp_jm17_eul.dta")
 selected <- alldata %>% select(AGE,SEX,INDE07M,HIQUL15D,MPNR02,SC10MMJ,BANDG)
 
 colnames(selected) <- c("Age","Sex","Industry","Education",
-                        "NumEmployee","Occupation","Salary") 
-
+                        "NumEmployee","Occupation","Salary")
 #########################################
 ###--------Dependent Varaibles-------####
 #########################################
