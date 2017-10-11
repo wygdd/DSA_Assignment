@@ -6,6 +6,10 @@ output:
   html_document: default
   pdf_document: default
 ---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
 #1. Introduction
 
 #2. Theory 
@@ -13,9 +17,7 @@ output:
 
 #3. Methods
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+TEXT (analys used x & y tools)
 
 ```{r load data, echo=FALSE,message=FALSE}
 library(dplyr)
@@ -23,10 +25,11 @@ library(haven)
 alldata <- read_dta("lfsp_jm17_eul.dta")
 ```
 
-## 3.1 Data
+## 3.1 Data Description
 
 TEXT (dataset contains x variables)
 
+<<<<<<< HEAD
 |Variable|Description|
 |:-------|:----------|
 |`Salary`|Salary of respondent (249.5 - 48000.0); N.b. adjusted for inflation|
@@ -41,6 +44,10 @@ TEXT (dataset contains x variables)
 |`Ethnicity`  |...|
 
 ```{r clean dataset,echo=FALSE}
+=======
+```{r clean dataset, echo = FALSE}
+#Created smaller manageable dataset from larger one which included variables we pre-selceted to explore + filtered data to remove observations where individuals did not answer or ...
+>>>>>>> 0c6bd21f6259d9a3486645ae858efb6f7422a6a1
 
 selected <- alldata %>% select(AGE,SEX,INDE07M,HIQUL15D,MPNR02,SC10MMJ,BANDG,
                                MARSTA,RELIG11,ETHGBEUL,REGWKR)
@@ -99,7 +106,6 @@ selected <- selected[!selected$workRegion   == -8
 
 ```
 
-
 ```{r combine groups}
 # Create dataset qlfs to combine groups, the processed dataset qlfs contains numeric data 
 qlfs <- as.data.frame(selected)
@@ -107,6 +113,7 @@ qlfs <- as.data.frame(selected)
 #########################################
 ###--------Dependent Varaibles-------####
 #########################################
+#Converted salary from interval to continuous data in order to perform linear regression
 
 #BANDG
 value_vec <- c('1.1','1.10','1.11','1.12','1.13','1.14','1.15','1.16','1.17',
@@ -269,7 +276,11 @@ qlfs$workRegion <- ifelse(qlfs$workRegion  == 22, 13, qlfs$workRegion)
 
 ```
 
+<<<<<<< HEAD
 ```{r label variables,echo=FALSE}
+=======
+```{r label variables, echo = FALSE}
+>>>>>>> 0c6bd21f6259d9a3486645ae858efb6f7422a6a1
 # Create dataset facQlfs, which change all the categorical variable of qlfs to factor with labels, in order for further linear regression.
 facQlfs <- as.data.frame(qlfs)
 
@@ -355,11 +366,26 @@ facQlfs$workRegion <- factor(facQlfs$workRegion,
                            'Northern Ireland'))
 ```
 
-## 2.2 Describtion of dataset
-570 observations and 7 variables
 
-## 2.3 Descriptive statistics
-#### 2.3.1 Univariate descriptive of variables
+Our final, clean, dataset contains 570 observations and 7 variables. These are outlined below.
+
+|Variable|Description|
+|:-------|:----------|
+|`Salary`|Salary of respondent (249.5 - 48000.0); N.b. adjusted for inflation|
+|`Age`|Age of respondent (0-99)|
+|`Sex`|Gender of respondent|
+|`Occupation`|Major occupation group of respondent|
+|`Industry`|Industry sector in main job|
+|`Education`|Highest qualification level|
+|`NumEmployee`|Number of employees at workplace|
+|`Religion`|...|
+|`MaritalStatus`|...|
+|`Ethnicity`  |...|
+
+
+# 4. Analysis
+### 4.1 Descriptive statistics
+#### 4.1.1 Univariate descriptive of variables
 - central tendency (mean, mode, median)
 - dispersion (range, variance, maximum, minimum, quartiles & IQR, std.)
 - frequency distribution tables
@@ -435,12 +461,12 @@ ggplot(facQlfs, aes(x=Salary))+geom_density()+labs(title='Annually Salary distri
 ```
 
 
-#### 2.3.2 Bivariate descriptive 
+#### 4.3.2 Bivariate descriptive 
 occupation industry
 occupation education
 
 
-## 3. Analysis
+## 4.2 Analysis
 ### 3.1  Correlation analysis
 occupation industry
 occupation education
