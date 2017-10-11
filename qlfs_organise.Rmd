@@ -21,7 +21,22 @@ library(haven)
 alldata <- read_dta("lfsp_jm17_eul.dta")
 ```
 
-## 2.1 Data Preparation 
+## 3.1 Data Preparation 
+
+
+|Variable|Description|
+|:-------|:----------|
+|`Salary`|Salary of respondent (249.5 - 48000.0); N.b. adjusted for inflation|
+|`Age`|Age of respondent (0-99)|
+|`Sex`|Gender of respondent|
+|`Occupation`|Major occupation group of respondent|
+|`Industry`|Industry sector in main job|
+|`Education`|Highest qualification level|
+|`NumEmployee`|Number of employees at workplace|
+|`Religion`|...|
+|`MaritalStatus`|...|
+|`Ethnicity`  |...|
+
 ```{r clean dataset}
 
 selected <- alldata %>% select(AGE,SEX,INDE07M,HIQUL15D,MPNR02,SC10MMJ,BANDG,
