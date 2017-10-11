@@ -40,7 +40,7 @@ TEXT (dataset contains x variables)
 |`MaritalStatus`|...|
 |`Ethnicity`  |...|
 
-```{r clean dataset}
+```{r clean dataset,echo=FALSE}
 
 selected <- alldata %>% select(AGE,SEX,INDE07M,HIQUL15D,MPNR02,SC10MMJ,BANDG,
                                MARSTA,RELIG11,ETHGBEUL,REGWKR)
@@ -269,7 +269,7 @@ qlfs$workRegion <- ifelse(qlfs$workRegion  == 22, 13, qlfs$workRegion)
 
 ```
 
-```{r label variables}
+```{r label variables,echo=FALSE}
 # Create dataset facQlfs, which change all the categorical variable of qlfs to factor with labels, in order for further linear regression.
 facQlfs <- as.data.frame(qlfs)
 
@@ -452,9 +452,9 @@ cor.test(qlfs$Industry,qlfs$Occupation)
 ### 3.2  Hypothesis test
 #### 3.2.1 T-test
 ```{r}
-caring = facQlfs %>% select(Salary,Occupation) %>% filter(Occupation=="Caring, Leisure and Other Service")
-sales = facQlfs %>% select(Salary,Occupation) %>% filter(Occupation=="Sales and Customer Service")
-elem = facQlfs %>% select(Salary,Occupation) %>% filter(Occupation=="Elementary")
+caring <-  facQlfs %>% select(Salary,Occupation) %>% filter(Occupation=="Caring, Leisure, Other Service")
+sales <-  facQlfs %>% select(Salary,Occupation) %>% filter(Occupation=="Sales, Customer Service")
+elem <- facQlfs %>% select(Salary,Occupation) %>% filter(Occupation=="Elementary")
 t.test(caring$Salary,sales$Salary)
 t.test(caring$Salary,elem$Salary)
 t.test(sales$Salary,elem$Salary)
@@ -496,7 +496,7 @@ ggplot(facQlfs.lm2,aes(y=facQlfs.lm1$residuals,x=facQlfs.lm2$fitted))+geom_point
 
 qqnorm(facQlfs.lm2$residuals) 
 qqline(facQlfs.lm2$residuals)
-install.packages("lmtest")
+
 library(lmtest)
 bptest(Salary ~ Education + Sex + 
                           Industry  + NumEmployee + 
