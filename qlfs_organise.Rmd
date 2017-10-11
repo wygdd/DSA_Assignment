@@ -458,8 +458,33 @@ facQlfs.lm1 <- lm(Salary ~ Education + Sex +
                           Industry  + NumEmployee + 
                           Occupation,  data=facQlfs)
 summary(facQlfs.lm1)
+
+
+
+facQlfs.lm2 <- lm(Salary ~Education + Sex + 
+                          Industry  + NumEmployee + 
+                          Occupation +Marital + Religion +Ethnicity +workRegion,data=facQlfs )
+summary(facQlfs.lm2)
+anova(facQlfs.lm2)
+
 ```
 
+Null hypothesis for anova is that the mean(average value of the dependent variable) is the same for all groups 
+
+
+
+```{r}
+ggplot(facQlfs.lm2,aes(y=facQlfs.lm1$residuals,x=facQlfs.lm2$fitted))+geom_point()
+
+qqnorm(facQlfs.lm2$residuals) 
+qqline(facQlfs.lm2$residuals)
+install.packages("lmtest")
+library(lmtest)
+bptest(Salary ~ Education + Sex + 
+                          Industry  + NumEmployee + 
+                          Occupation,  data=facQlfs)
+
+```
 
 # 4. Analysis and Results
 
