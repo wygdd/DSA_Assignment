@@ -9,8 +9,6 @@ output:
 #1. Introduction
 
 #2. Theory 
-
-
 #3. Methods
 
 ```{r setup, include=FALSE}
@@ -23,28 +21,16 @@ library(haven)
 alldata <- read_dta("lfsp_jm17_eul.dta")
 ```
 
-## 3.1 Description
-
-|Variable|Description|
-|:-------|:----------|
-|`Salary`|Salary of respondent (249.5 - 48000.0); N.b. adjusted for inflation|
-|`Age`|Age of respondent (0-99)|
-|`Sex`|Gender of respondent|
-|`Occupation`|Major occupation group of respondent|
-|`Industry`|Industry sector in main job|
-|`Education`|Highest qualification level|
-|`NumEmployee`|Number of employees at workplace|
-|`Religion`|...|
-|`MaritalStatus`|...|
-|`Ethnicity`  |...|
-
-
+## 2.1 Data Preparation 
 ```{r clean dataset}
 
-selected <- alldata %>% select(AGE,SEX,INDE07M,HIQUL15D,MPNR02,SC10MMJ,BANDG)
+selected <- alldata %>% select(AGE,SEX,INDE07M,HIQUL15D,MPNR02,SC10MMJ,BANDG,
+                               MARSTA,RELIG11,ETHGBEUL,REGWKR)
 
 colnames(selected) <- c("Age","Sex","Industry","Education",
-                        "NumEmployee","Occupation","Salary")
+                        "NumEmployee","Occupation","Salary",
+                        "Marital","Religion","Ethnicity","workRegion")
+
 #########################################
 ###--------Dependent Varaibles-------####
 #########################################
@@ -77,6 +63,21 @@ selected <- selected[!selected$NumEmployee ==-8
 #Occupation
 selected <- selected[!selected$Occupation == -8 
                     &!selected$Occupation == -9,]
+
+#Marital
+selected <- selected[!selected$Marital   == -9,] 
+
+#Religion
+selected <- selected[!selected$Religion  == -8,] 
+
+#Ethnicity 
+selected <- selected[!selected$Ethnicity == -8 
+                    &!selected$Ethnicity ==-9,] 
+
+#workRegion
+selected <- selected[!selected$workRegion   == -8 
+                     & !selected$workRegion == -9 
+                     & !selected$workRegion ==  2,]
 
 ```
 
@@ -199,6 +200,55 @@ qlfs$NumEmployee <- ifelse(qlfs$NumEmployee  == 9, 3, qlfs$NumEmployee)
 
 #Occupation
 # No need to combine or change group catagories
+
+
+# Marital
+qlfs$Marital <- ifelse(!qlfs$Marital ==1 & 
+                      !qlfs$Marital ==2, 3 , qlfs$Marital)
+
+
+#Religion
+qlfs$Religion <- ifelse(qlfs$Religion == 1, 1 ,2)
+
+
+#Ethnicity
+qlfs$Ethnicity <- ifelse(  qlfs$Ethnicity == 1 
+                          |qlfs$Ethnicity== 2 
+                          |qlfs$Ethnicity== 3, 1, qlfs$Ethnicity)
+qlfs$Ethnicity <- ifelse(  qlfs$Ethnicity == 5 
+                         |qlfs$Ethnicity == 6
+                         |qlfs$Ethnicity == 7
+                         |qlfs$Ethnicity == 8
+                         |qlfs$Ethnicity == 9,  2, qlfs$Ethnicity)
+qlfs$Ethnicity <- ifelse( qlfs$Ethnicity  == 10, 3, qlfs$Ethnicity)
+qlfs$Ethnicity <- ifelse( qlfs$Ethnicity  == 4
+                         |qlfs$Ethnicity == 11, 4, qlfs$Ethnicity)
+
+
+#workRegion
+qlfs$workRegion <- ifelse(qlfs$workRegion  == 20
+                      |qlfs$workRegion == 21, 1, qlfs$workRegion)
+
+qlfs$workRegion <- ifelse(qlfs$workRegion  == 1,  2, qlfs$workRegion)
+qlfs$workRegion <- ifelse(qlfs$workRegion  == 16
+                      |qlfs$workRegion == 17
+                      |qlfs$workRegion == 18, 3, qlfs$workRegion)
+
+qlfs$workRegion <- ifelse(qlfs$workRegion  == 3
+                      |qlfs$workRegion == 4
+                      |qlfs$workRegion == 5,  4, qlfs$workRegion)
+qlfs$workRegion <- ifelse(qlfs$workRegion  == 6,  5, qlfs$workRegion)
+qlfs$workRegion <- ifelse(qlfs$workRegion  == 14
+                      |qlfs$workRegion == 15, 6, qlfs$workRegion)
+qlfs$workRegion <- ifelse(qlfs$workRegion  == 19, 8, qlfs$workRegion)
+qlfs$workRegion <- ifelse(qlfs$workRegion  == 8
+                      |qlfs$workRegion == 9
+                      |qlfs$workRegion == 11 , 9, qlfs$workRegion)
+qlfs$workRegion <- ifelse(qlfs$workRegion  == 13, 10, qlfs$workRegion)
+qlfs$workRegion <- ifelse(qlfs$workRegion  == 12, 11, qlfs$workRegion)
+qlfs$workRegion <- ifelse(qlfs$workRegion  == 23, 12, qlfs$workRegion)
+qlfs$workRegion <- ifelse(qlfs$workRegion  == 22, 13, qlfs$workRegion)
+
 ```
 
 ```{r label variables}
@@ -251,6 +301,40 @@ facQlfs$Occupation <- factor(facQlfs$Occupation,
                             'Sales, Customer Service',
                             'Process, Plant, Machine Operatives',
                             'Elementary'))
+
+
+# MARSTA
+facQlfs$Marital <- factor( facQlfs$Marital, 
+                           levels=c(1,2,3),
+                           labels = c('Single','Married','Other'))
+
+#RELIG11
+facQlfs$Religion <- factor(facQlfs$Religion, 
+                           levels=c(1,2),
+                           labels = c('No','Yes'))
+
+#ETHGBEUL
+facQlfs$Ethnicity <-factor( facQlfs$Ethnicity, 
+                            levels = c(1,2,3,4),
+                            c('White','Asian','Black','Other')) 
+
+
+#REGWKR
+facQlfs$workRegion <- factor(facQlfs$workRegion,
+                         levels = c(1:13),
+                         c('Scotland',
+                           'North East',
+                           'North West',
+                           'Yorkshire and the Humber',
+                           'East Midlands',
+                           'West Midlands',
+                           'East of England',
+                           'Wales',
+                           'London',
+                           'South West',
+                           'South East',
+                           'Outside UK',
+                           'Northern Ireland'))
 ```
 
 ## 2.2 Describtion of dataset

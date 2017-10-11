@@ -17,20 +17,20 @@ This is a temporary file to record the removed mutation of variables after linea
 ```{r clean dataset}
 # Less Significant Variables
 
-#MARSTA
+
 #Marital
 selected <- selected[!selected$MARSTA   == -9,] 
 
-#RELIG11
+
 #Religion
 selected <- selected[!selected$RELIG11  == -8,] 
 
-#ETHGBEUL
+
 #Ethnicity 
 selected <- selected[!selected$ETHGBEUL == -8 
                     &!selected$ETHGBEUL ==-9,] 
-#REGWKR
-#Regions of place to work
+
+#workRegion
 selected <- selected[!selected$REGWKR   == -8 
                      & !selected$REGWKR == -9 
                      & !selected$REGWKR ==  2,]
@@ -40,14 +40,17 @@ selected <- selected[!selected$REGWKR   == -8
 ## 2.2 Combine groups of catagorical variables
 ```{r combine groups}
 
-# MARSTA
+
+# Marital
 qlfs$MARSTA <- ifelse(!qlfs$MARSTA ==1 & 
                       !qlfs$MARSTA ==2, 3 , qlfs$MARSTA)
 
-#RELIG11
+
+#Religion
 qlfs$RELIG11 <- ifelse(qlfs$RELIG11 == 1, 1 ,2)
 
-#ETHGBEUL
+
+#Ethinicity
 qlfs$ETHGBEUL <- ifelse(  qlfs$ETHGBEUL == 1 
                           |qlfs$ETHGBEUL== 2 
                           |qlfs$ETHGBEUL== 3, 1, qlfs$ETHGBEUL)
@@ -60,7 +63,8 @@ qlfs$ETHGBEUL <- ifelse( qlfs$ETHGBEUL  == 10, 3, qlfs$ETHGBEUL)
 qlfs$ETHGBEUL <- ifelse( qlfs$ETHGBEUL  == 4
                          |qlfs$ETHGBEUL == 11, 4, qlfs$ETHGBEUL)
 
-#REGWKR
+
+#Regions of workplace
 if(FALSE){
 qlfs$REGWKR <- ifelse(qlfs$REGWKR  == 20
                       |qlfs$REGWKR == 21, 1, qlfs$REGWKR)
