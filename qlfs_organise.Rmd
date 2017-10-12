@@ -414,6 +414,10 @@ facQlfs %>% select(Salary,Education) %>% group_by(Education) %>% summarise(mean(
 facQlfs %>% select(Education,Occupation) %>%  group_by(Occupation) %>% filter(Education=='Degree')  %>% summarise(percent=n()/173*100)
 
 ```
+```{r}
+eductable<- facQlfs %>% select(Education,Salary) %>% group_by(Education) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
+kable(eductable,digits = 0, align=c('l','c','r'), caption = 'Salary Mean and Standard Deviation by Education')
+```
 
 ##### Employee Numbers in workplace
 ```{r Employee Numbers in workplace,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
@@ -425,6 +429,10 @@ ggplot(facQlfs, aes(x=NumEmployee,y=Salary,col=NumEmployee))+geom_boxplot()+labs
 ggplot(facQlfs, aes(x=Salary,col=NumEmployee))+geom_density()+labs(title='Annually Salary distribution of Employee numbers in workplace',x='Salary',y='Density')+theme(plot.title = element_text(hjust = 0.5))
 ```
 
+```{r}
+numemploytable<- facQlfs %>% select(NumEmployee,Salary) %>% group_by(NumEmployee) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
+kable(numemploytable,digits = 0, align=c('l','l','r'), caption = 'Salary Mean and Standard Deviation by # of Employees')
+```
 
 ##### Occupations
 ```{r Occupations,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
@@ -437,6 +445,11 @@ ggplot(facQlfs, aes(x=Salary))+geom_density()+labs(title='Annually Salary distri
 
 ```
 
+
+```{r}
+occuptable<- facQlfs %>% select(Occupation,Salary) %>% group_by(Occupation) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
+kable(occuptable,digits = 0, align='l', caption = 'Salary Mean and Standard Deviation by Occupation')
+```
 
 ### 4.1.2 Bivariate descriptive 
 occupation industry
