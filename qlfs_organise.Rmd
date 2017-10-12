@@ -32,7 +32,7 @@ In that aspect, we want to determine other possible causes of the income gap and
 
 #3. Methods
 
-
+Our research into the dataset uses various statistical tools in R. *Ggplot* and *knitr* libraries were used to help visualise the data, *dplyr* was used for ease of data manipulation and *lmtest* was used to further our statistical research.
 
 ```{r load data and packages, echo=FALSE, message=FALSE}
 library(dplyr)
@@ -361,13 +361,6 @@ kable(ethnicity,col.names = c('Regions of Workplace','#Individuals'),caption=' W
 
 ## 3.2 Strength and limitations
 
-<<<<<<< HEAD
-=======
-
-
-
-
->>>>>>> d02081b17548edcef7e85fc242cb5e5526a0a1c5
 #4. Analysis
 ## 4.1 Descriptive statistics
 ### 4.1.1 Univariate descriptive of variables
@@ -448,7 +441,10 @@ kable(occuptable,digits = 0, align='l', caption = 'Salary Mean and Standard Devi
 # Religion
 ggplot(facQlfs, aes(x=Religion,y=Salary,col=Religion))+geom_boxplot()+labs(title='Salary distribution by Religion',x='Religion',y='Salary')+theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))
 ```
-
+```{r}
+religiontable<- facQlfs %>% select(Religion,Salary) %>% group_by(Religion) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
+kable(religiontable,digits = 0, align=c('l','l','r'), caption = 'Salary Mean and Standard Deviation by Religion')
+```
 
 #### Ethnicity
 ```{r Occupations,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
@@ -456,18 +452,21 @@ ggplot(facQlfs, aes(x=Religion,y=Salary,col=Religion))+geom_boxplot()+labs(title
 ggplot(facQlfs, aes(x=Ethnicity,y=Salary,col=Ethnicity))+geom_boxplot()+labs(title='Salary distribution by Ethnicity',x='Ethnicity',y='Salary')+theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))
 ```
 
+```{r}
+ethtable<- facQlfs %>% select(Ethnicity,Salary) %>% group_by(Ethnicity) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
+kable(ethtable,digits = 0, align=c('l','l','r'), caption = 'Salary Mean and Standard Deviation by Ethnicity')
+```
+
 
 #### Region of Workplace
 ```{r Occupations,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
 # WorkRegion
-ggplot(facQlfs, aes(x=workRegion,y=Salary,col=workRegion))+geom_boxplot()+labs(title='Salary distribution by Region of Workplace',x='workRegion',y='Salary')+theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))
+ggplot(facQlfs, aes(x=workRegion,y=Salary,col=workRegion))+geom_boxplot()+labs(title='Salary distribution by Region of Workplace',x='Region of Workplace',y='Salary')+theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))
 ```
-
-
-
-### 4.1.2 Bivariate descriptive 
-occupation industry
-occupation education
+```{r}
+workregtable<- facQlfs %>% select(Religion,Salary) %>% group_by(Religion) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
+kable(workregtable,digits = 0, align=c('l','l','r'), caption = 'Salary Mean and Standard Deviation by Region of Workplace')
+```
 
 
 ## 4.2  Hypothesis tests
