@@ -401,7 +401,7 @@ kable(industrytable,align='l')
 # Education
 ggplot(facQlfs, aes(x=Education,y=Salary,col=Education))+ geom_boxplot()+ labs(title='Annually Salary distribution of Highest Education Qualification',x='Highest Education Qualification',y='Salary')+ theme(plot.title = element_text(hjust = 0.5), axis.text = element_text(angle= 45, hjust = 0.9))
 
-ggplot(facQlfs, aes(x=Occupation,fill=Education))+ geom_bar(position=position_dodge())+ labs(title='Highest Education Qualification distribution among Occupation',x='Occupation',y='Count')+ theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 50, hjust = 0.9,size=6))
+ggplot(facQlfs, aes(x=Occupation,fill=Education))+ geom_bar(position=position_dodge())+ labs(title='Highest Education Qualification distribution by Occupation',x='Occupation',y='Count')+ theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 50, hjust = 0.9,size=6))
 
 ggplot(facQlfs, aes(x=Education,fill=Occupation))+ geom_bar(position=position_dodge())+ labs(title='Occupation distribution among Highest Education Qualification',x='Occupation',y='Count')+ theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))
 
