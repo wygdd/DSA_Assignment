@@ -328,7 +328,8 @@ edu <- facQlfs %>% select(Education) %>% group_by(Education) %>% summarise(count
 kable(edu,col.names =c('Education Type','#Individuals'))
 
 #NumEmployee
-#num_employee <- 
+num_employee <-facQlfs %>% select(NumEmployee) %>% group_by(NumEmployee) %>% summarise(count=n())
+kable(num_)
 
 ```
 
@@ -373,7 +374,7 @@ ggplot(facQlfs,aes(x=Salary,col=Sex))+ geom_density() + labs(title='Annually Sal
 
 ```{r}
 sextable<- facQlfs %>% select(Sex,Salary) %>% group_by(Sex) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
-kable(sextable,align='l',format='html')
+kable(sextable,align='l')
 ```
 
 ##### Industry
