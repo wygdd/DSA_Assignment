@@ -43,6 +43,9 @@ library(knitr)
 library(stargazer)
 library(gridExtra)
 alldata <- read_dta("lfsp_jm17_eul.dta")
+output <- opts_knit$get("rmarkdown.pandoc.to")
+if (output=="html"){out_format <- "html"}
+if (output=="beamer"){out_format <- "latex"}
 ```
 
 
@@ -437,7 +440,7 @@ kable(occuptable,digits = 0, align='l', caption = 'Salary Mean and Standard Devi
 ```
 
 #### Religion
-```{r Occupations,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
+```{r Religion,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
 # Religion
 ggplot(facQlfs, aes(x=Religion,y=Salary,col=Religion))+geom_boxplot()+labs(title='Salary distribution by Religion',x='Religion',y='Salary')+theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))
 ```
@@ -454,7 +457,7 @@ ggplot(facQlfs, aes(x=Marital,y=Salary,col=Marital))+geom_boxplot()+labs(title='
 
 
 #### Ethnicity
-```{r Occupations,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
+```{r Ethnicity,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
 # Ethnicity
 ggplot(facQlfs, aes(x=Ethnicity,y=Salary,col=Ethnicity))+geom_boxplot()+labs(title='Salary distribution by Ethnicity',x='Ethnicity',y='Salary')+theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))
 ```
@@ -466,49 +469,23 @@ kable(ethtable,digits = 0, align=c('l','l','r'), caption = 'Salary Mean and Stan
 
 
 #### Region of Workplace
-```{r Occupations,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
+```{r Region of Workplace,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
 # WorkRegion
 ggplot(facQlfs, aes(x=workRegion,y=Salary,col=workRegion))+geom_boxplot()+labs(title='Salary distribution by Region of Workplace',x='Region of Workplace',y='Salary')+theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))
 ```
+
 ```{r}
 workregtable<- facQlfs %>% select(Religion,Salary) %>% group_by(Religion) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
 kable(workregtable,digits = 0, align=c('l','l','r'), caption = 'Salary Mean and Standard Deviation by Region of Workplace')
 ```
 
-## 4.2  Linear regression
-```{r linear regression 1, echo=FALSE}
-# All variables included
-facQlfs.lm1 <- lm(Salary~Education+Sex+Industry+NumEmployee+Occupation+Marital+Religion+Ethnicity+workRegion,data=facQlfs )
-summary(facQlfs.lm1)
-
-
-# Drop less significant variables
-facQlfs.lm2 <- lm(Salary ~ Education + Sex + 
-                          Industry  + NumEmployee + 
-                          Occupation,  data=facQlfs)
-summary(facQlfs.lm2)
+## 4.2  Hypothesis tests
+### 4.2.1  Correlation analyses
+```{r,echo = FALSE,message=FALSE}
+cor.test(qlfs$Age,qlfs$Salary)
 ```
 
-
-## 4.3  Hypothesis tests
-### 4.3.1 T-tests
-```{r,echo = FALSE}
-caring <-  facQlfs %>% select(Salary,Occupation) %>% filter(Occupation=="Caring, Leisure, Other Service")
-sales <-  facQlfs %>% select(Salary,Occupation) %>% filter(Occupation=="Sales, Customer Service")
-elem <- facQlfs %>% select(Salary,Occupation) %>% filter(Occupation=="Elementary")
-t.test(caring$Salary,sales$Salary)
-t.test(caring$Salary,elem$Salary)
-t.test(sales$Salary,elem$Salary)
-
-pairwise.t.test(facQlfs$Salary,facQlfs$Education)
-pairwise.t.test(facQlfs$Salary,facQlfs$Sex)
-pairwise.t.test(facQlfs$Salary,facQlfs$Industry)
-pairwise.t.test(facQlfs$Salary,facQlfs$NumEmployee)
-pairwise.t.test(facQlfs$Salary,facQlfs$Occupation)
-```
-
-
-### 4.3.2 Chi-square tests 
+### 4.2.2 Chi-square tests 
 ```{r,echo = FALSE}
 chisq.test(table(facQlfs$Industry,facQlfs$Occupation))
 chisq.test(table(facQlfs$Education,facQlfs$Occupation))
@@ -517,10 +494,35 @@ chisq.test(table(facQlfs$Education,facQlfs$Occupation))
 
 
 
-### 4.3.3  Correlation analyses
-```{r,echo = FALSE}
-cor.test(qlfs$Age,qlfs$Salary)
+
+## 4.2  Linear regression
+```{r linear regression 1, echo=FALSE,result='asis'}
+# All variables included
+facQlfs.lm1 <- lm(Salary~ Age+Education+Sex+Industry
+                  +NumEmployee+Occupation+Marital+Religion
+                  +Ethnicity+workRegion,data=facQlfs )
+summary(facQlfs.lm1)
+# Drop less significant variables
+facQlfs.lm2 <- lm(Salary ~ Age+ Education + Sex + 
+                          Industry  + NumEmployee + 
+                          Occupation,  data=facQlfs)
+
+stargazer(facQlfs.lm1, facQlfs.lm2, type = "html", style = "qje")
+summary(facQlfs.lm2)
 ```
+
+
+
+### 4.3.1 T-tests
+```{r,echo = FALSE,message=FALSE,result='asis'}
+pairwise.t.test(facQlfs$Salary,facQlfs$Education)
+pairwise.t.test(facQlfs$Salary,facQlfs$Sex)
+pairwise.t.test(facQlfs$Salary,facQlfs$Industry)
+pairwise.t.test(facQlfs$Salary,facQlfs$NumEmployee)
+pairwise.t.test(facQlfs$Salary,facQlfs$Occupation)
+```
+
+
 
 
 ```{r,echo = FALSE}
