@@ -31,6 +31,9 @@ In that aspect, we want to determine other possible causes of the income gap and
 (OR Our theory is that we believe, in line with our resources, that gender discrimination is still present in today's society. This will mean that in theory, we will expect that gender will have an effect on salary.)
 
 #3. Methods
+
+Our research into the dataset uses various statistical tools in R. *Ggplot* and *knitr* libraries were used to help visualise the data, *dplyr* was used for ease of data manipulation and *lmtest* was used to further our statistical research.
+
 ```{r load data, echo=FALSE, message=FALSE}
 library(dplyr)
 library(haven)
@@ -39,7 +42,6 @@ library(lmtest)
 library(knitr)
 alldata <- read_dta("lfsp_jm17_eul.dta")
 ```
-
 
 ## 3.1 Data Description
 ```{r clean dataset, echo = FALSE}
@@ -292,7 +294,8 @@ facQlfs$workRegion <- factor(facQlfs$workRegion,
 
 ```
 
-The dataset initially consisted of 88,528 observations of 739 variables. In order to examine the relationship between salary and gender and explore the possibility of gender discrimination in the UK, we have selected variables which also may impact the pay gap. Our final dataset contains 570 observations of 7 variables. These are outlined below.
+The dataset initially consisted of 88,528 observations of 739 variables. This covers 88,528 individuals from the UK. The QLFS aims to 'inform social, economic and employment policy' (ONS, 2017b.). As such, the questionnaire covers questions on individual demographics, household characteristics and job information amongst others.
+In order to examine the relationship between salary and gender and explore the possibility of gender discrimination in the UK, we have selected variables which also may impact the pay gap. Our final dataset contains 570 observations of 7 variables. These are outlined below.
 
 |Variable                |Description                                       |
 |:-----------------------|:-------------------------------------------------|
@@ -307,6 +310,11 @@ The dataset initially consisted of 88,528 observations of 739 variables. In orde
 |`MaritalStatus`         |Marital status|
 |`Ethnicity`             |Ethnicity of respondent in GB|
 |`Region of workplace`   |Region of place of work|
+
+
+For ease of analysis we manipulated certain variables. Salary was converted from intervals to continuous data, to allow for a linear regression with Salary as the dependent variable, and all other variables were condensed to a set number of dummy variables.
+
+#ADD DUMMY INFO?
 
 ```{r}
 summary(facQlfs)
@@ -333,8 +341,6 @@ kable(edu,col.names =c('Education Type','#Individuals'))
 
 
 
-
-
 #4. Analysis
 ## 4.1 Descriptive statistics
 ### 4.1.1 Univariate descriptive of variables
@@ -346,16 +352,6 @@ kable(edu,col.names =c('Education Type','#Individuals'))
 
 
 ##### Sex
-```{r}
-man <- c(415, 532, 686, 773, 764, 757, 749, 656, 621)
-woman <- c(366, 492, 573, 613, 568, 557, 529, 518, 405)
-ages <- c("21-25", "26-30", "31-35", "36-40", "41-45", "46-50", "51-55", "56-60", "60-65")
-dtmw <- data.frame(ages, man, woman)
-
-ggplot(dtmw) +geom_line(aes(x= ages, y=man,col='male'),group=1)+geom_point(aes(x= ages, y=man,col='male'))+ geom_line(aes(x= ages, y=woman,col='female'),group=2) + geom_point(aes(x= ages, y=woman,col='female'))+ylim(0,800)+ scale_color_discrete(name='Sex')+labs(title='Mean gross weekly pays in main job',x='Age',y='Salary')+theme(plot.title=element_text(hjust=0.5))
-
-
-```
 
 ```{r Sex,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
 
@@ -371,8 +367,23 @@ ggplot(facQlfs,aes(x=Salary,col=Sex))+ geom_density() + labs(title='Annually Sal
 
 ```{r}
 sextable<- facQlfs %>% select(Sex,Salary) %>% group_by(Sex) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
-kable(sextable,align='l')
+kable(sextable, align='l')
 ```
+
+We can note that there is apparent discrimination between the two sexes in relation to salaries. Most of the females' salary lie below the median of the males'. We can also see that the interquartile range for male series is much larger than that of females'. The range of female salary is also smaller than that of male salary, though there is one outlier. Most of the males' salaries are positively skewed, judging from the fact that $Q3 - Q2 > Q2 - Q1$. This is not so apparent for the females. Considering the 1.07 ratio of female to male observations, the discrimination cannot be regarded as a sampling error. 
+
+```{r, echo=FALSE}
+man <- c(415, 532, 686, 773, 764, 757, 749, 656, 621)
+woman <- c(366, 492, 573, 613, 568, 557, 529, 518, 405)
+ages <- c("21-25", "26-30", "31-35", "36-40", "41-45", "46-50", "51-55", "56-60", "60-65")
+dtmw <- data.frame(ages, man, woman)
+
+ggplot(dtmw) +geom_line(aes(x= ages, y=man,col='male'),group=1)+geom_point(aes(x= ages, y=man,col='male'))+ geom_line(aes(x= ages, y=woman,col='female'),group=2) + geom_point(aes(x= ages, y=woman,col='female'))+ylim(0,800)+ scale_color_discrete(name='Sex')+labs(title='Mean gross weekly pay in main job',x='Age',y='Salary')+theme(plot.title=element_text(hjust=0.5))
+```
+*Adapted from Office for National Statistics*
+
+This initial observation, along with the above plot, seems to corroborate that males on average get higher salaries than females.
+
 
 ##### Industry
 ```{r Industry,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
@@ -383,12 +394,12 @@ ggplot(facQlfs, aes(x=Industry,y=Salary,col=Industry))+ geom_boxplot()+ labs(tit
 
 ggplot(facQlfs,aes(x=Salary,col=Industry))+ geom_density()+ labs(title='Annually Salary Distribution of Industry',x ='Salary',y='Density')+ theme(plot.title = element_text(hjust = 0.5))
 
-
 ```
+
 
 ```{r}
 industrytable <- facQlfs %>% select(Industry,Salary) %>% group_by(Industry) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
-kable(industrytable,align='l')
+kable(industrytable, digits = align='l')
 
 ```
 
