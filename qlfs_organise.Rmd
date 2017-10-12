@@ -31,12 +31,14 @@ In that aspect, we want to determine other possible causes of the income gap and
 (OR Our theory is that we believe, in line with our resources, that gender discrimination is still present in today's society. This will mean that in theory, we will expect that gender will have an effect on salary.)
 
 #3. Methods
-```{r load data, echo=FALSE, message=FALSE}
+```{r load data and packages, echo=FALSE, message=FALSE}
 library(dplyr)
 library(haven)
 library(ggplot2)
 library(lmtest)
 library(knitr)
+library(stargazer)
+library(gridExtra)
 alldata <- read_dta("lfsp_jm17_eul.dta")
 ```
 
@@ -308,11 +310,11 @@ The dataset initially consisted of 88,528 observations of 739 variables. In orde
 |`Ethnicity`             |Ethnicity of respondent in GB|
 |`Region of workplace`   |Region of place of work|
 
-```{r}
+```{r summary}
 summary(facQlfs)
 ```
 
-```{r, echo=FALSE,results='asis'}
+```{r summary tables, echo=FALSE,results='asis', eval=FALSE}
 # Industry
 industry <- facQlfs %>% select(Industry) %>% group_by(Industry)%>% summarise(count=n())
 kable(industry,col.names =c('Industry Type','#Individuals'),caption = 'Industry summary')
@@ -358,65 +360,47 @@ kable(ethnicity,col.names = c('Regions of Workplace','#Individuals'),caption=' W
 
 
 
+
 #4. Analysis
 ## 4.1 Descriptive statistics
 ### 4.1.1 Univariate descriptive of variables
-- central tendency (mean, mode, median)
-- dispersion (range, variance, maximum, minimum, quartiles & IQR, std.)
-- frequency distribution tables
-- bar charts
-- histograms
+#### Sex
+```{r plots Sex,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
 
 
-##### Sex
-```{r}
+# Sex
+box <- ggplot(facQlfs, aes(x=Sex,y=Salary,col=Sex))+ geom_boxplot()+ labs(title='Annually Salary distribution of Gender',x='Sex',y='Salary')+ theme(plot.title = element_text(hjust = 0.5))
+
 man <- c(415, 532, 686, 773, 764, 757, 749, 656, 621)
 woman <- c(366, 492, 573, 613, 568, 557, 529, 518, 405)
 ages <- c("21-25", "26-30", "31-35", "36-40", "41-45", "46-50", "51-55", "56-60", "60-65")
 dtmw <- data.frame(ages, man, woman)
 
-ggplot(dtmw) +geom_line(aes(x= ages, y=man,col='male'),group=1)+geom_point(aes(x= ages, y=man,col='male'))+ geom_line(aes(x= ages, y=woman,col='female'),group=2) + geom_point(aes(x= ages, y=woman,col='female'))+ylim(0,800)+ scale_color_discrete(name='Sex')+labs(title='Mean gross weekly pays in main job',x='Age',y='Salary')+theme(plot.title=element_text(hjust=0.5))
+week <- ggplot(dtmw) +geom_line(aes(x= ages, y=man,col='male'),group=1)+geom_point(aes(x= ages, y=man,col='male'))+ geom_line(aes(x= ages, y=woman,col='female'),group=2) + geom_point(aes(x= ages, y=woman,col='female'))+ylim(0,800)+ scale_color_discrete(name='Sex')+labs(title='Mean gross weekly pays in main job',x='Age',y='Salary')+theme(plot.title=element_text(hjust=0.5))
 
-
+grid.arrange(box,week,ncol=2)
 ```
 
-```{r Sex,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
-
-
-# Sex
-ggplot(facQlfs,aes(x=Age,y=Salary,col=Sex))+ geom_point() + labs(title='Annually Salary Distribution of Gender',x='Age',y='Salary')+ theme(plot.title = element_text(hjust = 0.5))
-
-ggplot(facQlfs, aes(x=Sex,y=Salary,col=Sex))+ geom_boxplot()+ labs(title='Annually Salary distribution of Gender',x='Sex',y='Salary')+ theme(plot.title = element_text(hjust = 0.5))
-
-ggplot(facQlfs,aes(x=Salary,col=Sex))+ geom_density() + labs(title='Annually Salary Distribution of Gender',x='Salary',y='Density')+ theme(plot.title = element_text(hjust = 0.5))
-
-```
-
-```{r}
+```{r table sex mean sd., echo=FALSE}
 sextable<- facQlfs %>% select(Sex,Salary) %>% group_by(Sex) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
 kable(sextable,align='l')
 ```
 
-##### Industry
-```{r Industry,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
+#### Industry
+```{r plots Industry,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
 # Industry
-ggplot(facQlfs,aes(x=Age,y=Salary,col=Industry))+ geom_point()+ labs(title='Annually Salary Distribution of Industry',x ='Age',y='Salary')+ theme(plot.title = element_text(hjust = 0.5))
-
 ggplot(facQlfs, aes(x=Industry,y=Salary,col=Industry))+ geom_boxplot()+ labs(title='Annually Salary distribution of Industry',x='Industry',y='Salary')+ theme(plot.title = element_text(hjust = 0.5), axis.text = element_text(angle= 45, hjust = 0.9))
-
-ggplot(facQlfs,aes(x=Salary,col=Industry))+ geom_density()+ labs(title='Annually Salary Distribution of Industry',x ='Salary',y='Density')+ theme(plot.title = element_text(hjust = 0.5))
-
 
 ```
 
-```{r}
+```{r table industry mean sd, echo=FALSE}
 industrytable <- facQlfs %>% select(Industry,Salary) %>% group_by(Industry) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
 kable(industrytable,align='l')
 
 ```
 
 
-##### Highest Education Level
+#### Highest Education Level
 ```{r Highest Educational Level,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
 # Education
 ggplot(facQlfs, aes(x=Education,y=Salary,col=Education))+ geom_boxplot()+ labs(title='Annually Salary distribution of Highest Education Qualification',x='Highest Education Qualification',y='Salary')+ theme(plot.title = element_text(hjust = 0.5), axis.text = element_text(angle= 45, hjust = 0.9))
@@ -445,7 +429,7 @@ eductable<- facQlfs %>% select(Education,Salary) %>% group_by(Education) %>% sum
 kable(eductable,digits = 0, align=c('l','c','r'), caption = 'Salary Mean and Standard Deviation by Education')
 ```
 
-##### Employee Numbers in workplace
+#### Employee Numbers in workplace
 ```{r Employee Numbers in workplace,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
 # NumEmployee
 ggplot(facQlfs, aes(x=Age,y=Salary,col=NumEmployee))+geom_point()+labs(title='Annually Salary distribution of Employee numbers in workplace',x='Age',y='Salary')+theme(plot.title = element_text(hjust = 0.5))
@@ -460,7 +444,7 @@ numemploytable<- facQlfs %>% select(NumEmployee,Salary) %>% group_by(NumEmployee
 kable(numemploytable,digits = 0, align=c('l','l','r'), caption = 'Salary Mean and Standard Deviation by # of Employees')
 ```
 
-##### Occupations
+#### Occupations
 ```{r Occupations,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
 # Occupation
 ggplot(facQlfs, aes(x=Age,y=Salary,col=Occupation))+geom_point()+labs(title='Annually Salary distribution of Occupations',x='Age',y='Salary')+theme(plot.title = element_text(hjust = 0.5))
@@ -480,6 +464,7 @@ kable(occuptable,digits = 0, align='l', caption = 'Salary Mean and Standard Devi
 #### Religion
 #### Ethnicity
 #### Region of Workplace
+
 
 ### 4.1.2 Bivariate descriptive 
 occupation industry
@@ -538,7 +523,7 @@ summary(facQlfs.lm2)
 ```
 
 ```{r print test table}
-
+stargazer(list(facQlfs.lm1, facQlfs.lm2), digits = 2)
 
 ```
 
