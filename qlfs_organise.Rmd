@@ -373,7 +373,7 @@ ggplot(facQlfs,aes(x=Salary,col=Sex))+ geom_density() + labs(title='Annually Sal
 
 ```{r}
 sextable<- facQlfs %>% select(Sex,Salary) %>% group_by(Sex) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
-kable(sextable,align='l',format='html')
+kable(sextable,align='l')
 ```
 
 ##### Industry
@@ -387,6 +387,13 @@ ggplot(facQlfs,aes(x=Salary,col=Industry))+ geom_density()+ labs(title='Annually
 
 
 ```
+
+```{r}
+industrytable <- facQlfs %>% select(Industry,Salary) %>% group_by(Industry) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
+kable(industrytable,align='l')
+
+```
+
 
 ##### Highest Education Level
 ```{r Highest Educational Level,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
