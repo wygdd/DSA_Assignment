@@ -30,6 +30,7 @@ library(dplyr)
 library(haven)
 library(ggplot2)
 library(lmtest)
+library(knitr)
 alldata <- read_dta("lfsp_jm17_eul.dta")
 ```
 ## 3.1 Data Description
@@ -300,23 +301,24 @@ Several statistical tools in R were used in the analysis of the dataset. X and X
 
 Our final, clean, dataset contains 570 observations and 7 variables. These are outlined below.
 
-|Variable|Description|
-|:-------|:----------|
-|`Salary`|Salary of respondent (249.5 - 48000.0); N.b. adjusted for inflation|
-|`Age`|Age of respondent (0-99)|
-|`Sex`|Gender of respondent|
-|`Occupation`|Major occupation group of respondent|
-|`Industry`|Industry sector in main job|
-|`Education`|Highest qualification level|
-|`NumEmployee`|Number of employees at workplace|
-|`Religion`|Religion GB level|
-|`MaritalStatus`|Marital status|
-|`Ethnicity`  |Ethnicity in GB|
-|`Region of workplace`  |Region of place of work|
+|Variable                |Description                                       |
+|:-----------------------|:-------------------------------------------------|
+|`Salary`                |Salary of respondent (249.5 - 48000.0); N.b. adjusted for inflation|
+|`Age`                   |Age of respondent (0-99)|
+|`Sex`                   |Gender of respondent|
+|`Occupation`            |Major occupation group of respondent|
+|`Industry`              |Industry sector in main job|
+|`Education`             |Highest qualification level|
+|`NumEmployee`           |Number of employees at workplace|
+|`Religion`              |Religion GB level|
+|`MaritalStatus`         |Marital status|
+|`Ethnicity`             |Ethnicity in GB|
+|`Region of workplace`   |Region of place of work|
 
 
-```{r}
-
+```{r, echo=FALSE}
+library(knitr)
+kable(summary(facQlfs$Industry))
 ```
 
 
@@ -338,7 +340,12 @@ woman <- c(366, 492, 573, 613, 568, 557, 529, 518, 405)
 ages <- c("21-25", "26-30", "31-35", "36-40", "41-45", "46-50", "51-55", "56-60", "60-65")
 dtmw <- data.frame(ages, man, woman)
 
-ggplot(dtmw) +geom_line(aes(x= ages, y=man,col='man'),group=1)+ geom_line(aes(x= ages, y=woman,col='woman'),group=2) + ylim(0,800)
+ggplot(dtmw) +geom_line(aes(x= ages, y=man,col='male'),group=1)+geom_point(aes(x= ages, y=man,col='male'))+ geom_line(aes(x= ages, y=woman,col='female'),group=2) + geom_point(aes(x= ages, y=woman,col='female'))+ylim(0,800)+ scale_color_discrete(name='Sex')+labs(title='Mean gross weekly pays in main job',x='Age',y='Salary')+theme(plot.title=element_text(hjust=0.5))
+
+
+```
+
+```{r}
 
 ```
 
@@ -410,13 +417,13 @@ ggplot(facQlfs, aes(x=Salary))+geom_density()+labs(title='Annually Salary distri
 ```
 
 
-#### 4.3.2 Bivariate descriptive 
+#### 4.2 Bivariate descriptive 
 occupation industry
 occupation education
 
 
-## 4.2 Analysis
-### 3.1  Correlation analysis
+## 4.3 Analysis
+### 4.3.1  Correlation analysis
 occupation industry
 occupation education
 ```{r,echo = FALSE}
@@ -424,7 +431,7 @@ cor.test(qlfs$Education,qlfs$Occupation)
 cor.test(qlfs$Industry,qlfs$Occupation)
 ```
 
-### 3.2  Hypothesis test
+### 4.3.2  Hypothesis test
 #### 3.2.1 T-test
 ```{r,echo = FALSE}
 caring <-  facQlfs %>% select(Salary,Occupation) %>% filter(Occupation=="Caring, Leisure, Other Service")
@@ -445,20 +452,24 @@ chisq.test(table(facQlfs$Education,facQlfs$Occupation))
 ```
 
 
-### 3.3  Linear regression
+### 4.3.3  Linear regression
 ```{r linear regression 1, echo=FALSE}
-facQlfs.lm1 <- lm(Salary ~ Education + Sex + 
-                          Industry  + NumEmployee + 
-                          Occupation,  data=facQlfs)
-summary(facQlfs.lm1)
-
-
-
-facQlfs.lm2 <- lm(Salary ~Education + Sex + 
+# All variables included
+facQlfs.lm1 <- lm(Salary ~Education + Sex + 
                           Industry  + NumEmployee + 
                           Occupation +Marital + Religion +Ethnicity +workRegion,data=facQlfs )
+summary(facQlfs.lm1)
+anova(facQlfs.lm1)
+
+# Drop less significant variables
+facQlfs.lm2 <- lm(Salary ~ Education + Sex + 
+                          Industry  + NumEmployee + 
+                          Occupation,  data=facQlfs)
 summary(facQlfs.lm2)
-anova(facQlfs.lm2)
+```
+
+```{r print test table}
+
 
 ```
 
@@ -479,7 +490,6 @@ bptest(Salary ~ Education + Sex +
 
 ```
 
-# 4. Analysis and Results
 
 #5. Conclusion
 
