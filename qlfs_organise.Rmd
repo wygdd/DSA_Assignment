@@ -354,7 +354,6 @@ kable(ethnicity,col.names = c('Regions of Workplace','#Individuals'),caption=' W
 
 ## 3.2 Strength and limitations
 
-
 #4. Analysis
 ## 4.1 Descriptive statistics
 ### 4.1.1 Univariate descriptive of variables
