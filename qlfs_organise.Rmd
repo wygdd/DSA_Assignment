@@ -389,6 +389,13 @@ ggplot(facQlfs,aes(x=Salary,col=Industry))+ geom_density()+ labs(title='Annually
 
 ```
 
+```{r}
+industrytable <- facQlfs %>% select(Industry,Salary) %>% group_by(Industry) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
+kable(industrytable,align='l')
+
+```
+
+
 ##### Highest Education Level
 ```{r Highest Educational Level,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
 # Education
