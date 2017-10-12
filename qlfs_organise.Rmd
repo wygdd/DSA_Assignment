@@ -354,19 +354,7 @@ kable(ethnicity,col.names = c('Regions of Workplace','#Individuals'),caption=' W
 
 ## 3.2 Strength and limitations
 
-
-<<<<<<< HEAD
-
-
-=======
-```{r Sex,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
-# Sex
-ggplot(facQlfs,aes(x=Age,y=Salary,col=Sex))+ geom_point() + labs(title='Annually Salary Distribution of Gender',x='Age',y='Salary')+ theme(plot.title = element_text(hjust = 0.5))
->>>>>>> Shala
-
-
-
-
+
 #4. Analysis
 ## 4.1 Descriptive statistics
 ### 4.1.1 Univariate descriptive of variables
