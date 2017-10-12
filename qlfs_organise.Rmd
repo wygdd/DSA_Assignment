@@ -354,8 +354,6 @@ kable(edu,col.names =c('Education Type','#Individuals'))
 ##### Sex
 
 ```{r Sex,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
-
-
 # Sex
 ggplot(facQlfs,aes(x=Age,y=Salary,col=Sex))+ geom_point() + labs(title='Annually Salary Distribution of Gender',x='Age',y='Salary')+ theme(plot.title = element_text(hjust = 0.5))
 
