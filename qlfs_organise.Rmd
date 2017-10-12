@@ -1,6 +1,6 @@
 ---
-title: "qlfs_organise"
-author: "Wenyu"
+title: "Maths and Statistics Foundations Project"
+author: "Group N"
 date: "06/10/2017"
 output:
   html_document: default
@@ -12,42 +12,30 @@ knitr::opts_chunk$set(echo = TRUE)
 
 #1. Introduction
 
+Discrimination has long been a controversial topic. Forms of discrimination can range greatly but over the last few decades, one notable form of discrimination has been the phenomenon of an income gap that has existed in society (Blinder, 1973). The European Commission defines gender pay gap as “the difference between men’s and women’s pay, based on the average difference in gross hourly earnings of all employees” (European Commission, 2017). In recent years especially, addressing the gender related pay gap has been a policy matter of many countries namely those belonging to the EU (European Union, 2014). 
+ 
+
+The United Nations (2017), aims to remove all gender discrimination to ensure gender equality, and according to the European Commission (2017), gender discrimination is prohibited under European law. However, the Office for National Statistics (2017) states that female full-time employees in the UK earn on average 9.4 percent less than male full-time employees in 2016. This raises the question if gender pay discrimination currently exists in the UK, or if there are other drivers affecting the differences in salary levels.
+ 
+Consequently, this report aims to identify if there currently exists gender pay discrimination in the UK whilst considering other factors which may affect the pay gap such as differences in where and how people in the UK tend to work. 
+
+These results would help to make suggestions regarding salary policies leading to a minimisation of the pay gap.
+
 #2. Theory 
 
 
 #3. Methods
-
-TEXT (analys used x & y tools)
-
 ```{r load data, echo=FALSE,message=FALSE}
 library(dplyr)
 library(haven)
+library(ggplot2)
+library(lmtest)
 alldata <- read_dta("lfsp_jm17_eul.dta")
 ```
-
 ## 3.1 Data Description
-
-TEXT (dataset contains x variables)
-
-<<<<<<< HEAD
-|Variable|Description|
-|:-------|:----------|
-|`Salary`|Salary of respondent (249.5 - 48000.0); N.b. adjusted for inflation|
-|`Age`|Age of respondent (0-99)|
-|`Sex`|Gender of respondent|
-|`Occupation`|Major occupation group of respondent|
-|`Industry`|Industry sector in main job|
-|`Education`|Highest qualification level|
-|`NumEmployee`|Number of employees at workplace|
-|`Religion`|...|
-|`MaritalStatus`|...|
-|`Ethnicity`  |...|
-
-```{r clean dataset,echo=FALSE}
-=======
 ```{r clean dataset, echo = FALSE}
 #Created smaller manageable dataset from larger one which included variables we pre-selceted to explore + filtered data to remove observations where individuals did not answer or ...
->>>>>>> 0c6bd21f6259d9a3486645ae858efb6f7422a6a1
+
 
 selected <- alldata %>% select(AGE,SEX,INDE07M,HIQUL15D,MPNR02,SC10MMJ,BANDG,
                                MARSTA,RELIG11,ETHGBEUL,REGWKR)
@@ -55,64 +43,31 @@ selected <- alldata %>% select(AGE,SEX,INDE07M,HIQUL15D,MPNR02,SC10MMJ,BANDG,
 colnames(selected) <- c("Age","Sex","Industry","Education",
                         "NumEmployee","Occupation","Salary",
                         "Marital","Religion","Ethnicity","workRegion")
-
-#########################################
-###--------Dependent Varaibles-------####
-#########################################
-
 #Salary
-selected <- selected[!selected$Salary==1 & !selected$Salary==2 & !selected$Salary==3 & !selected$Salary==-8 &!selected$Salary==-9,] 
-
-
-###########################################
-###--------Independent Variables-------####
-###########################################
-
+selected <- selected %>% filter(Salary!=1 & Salary!=2 & Salary!=3 
+                                & Salary!=-8 & Salary!=-9)
 #Age
-
 #Sex
-
 #Industry
-selected <- selected[!selected$Industry==-8,] 
-
+selected <- selected %>% filter(Industry!=-8)
 #Education
-selected <- selected[!selected$Education  ==-8 
-                    &!selected$Education  ==-9 
-                    &!selected$Education  == 7,] 
-
+selected <- selected %>% filter(Education!=-8 & Education !=-9 & Education !=7)
 #NumEmployee
-selected <- selected[!selected$NumEmployee ==-8 
-                    &!selected$NumEmployee ==-9,]
-
-
+selected <- selected %>% filter(NumEmployee!=-8 & NumEmployee !=-9)
 #Occupation
-selected <- selected[!selected$Occupation == -8 
-                    &!selected$Occupation == -9,]
-
+selected <- selected %>% filter(Occupation!=-8 & Occupation!=-9)
 #Marital
-selected <- selected[!selected$Marital   == -9,] 
-
+selected <- selected %>% filter(Marital!=-9)
 #Religion
-selected <- selected[!selected$Religion  == -8,] 
-
+selected <- selected %>% filter(Religion!=-8)
 #Ethnicity 
-selected <- selected[!selected$Ethnicity == -8 
-                    &!selected$Ethnicity ==-9,] 
-
+selected <- selected %>% filter(Ethnicity!=-8 & Ethnicity!=-9)
 #workRegion
-selected <- selected[!selected$workRegion   == -8 
-                     & !selected$workRegion == -9 
-                     & !selected$workRegion ==  2,]
+selected <- selected %>% filter(workRegion!=-8 & workRegion!=-9 & workRegion!=2)
 
-```
-
-```{r combine groups}
 # Create dataset qlfs to combine groups, the processed dataset qlfs contains numeric data 
 qlfs <- as.data.frame(selected)
 
-#########################################
-###--------Dependent Varaibles-------####
-#########################################
 #Converted salary from interval to continuous data in order to perform linear regression
 
 #BANDG
@@ -179,11 +134,6 @@ for (i in 1:nrow(qlfs)){
 #--BANDG of type 'character', change it to numeric
 qlfs$Salary <- as.numeric(qlfs$Salary)
 
-
-###########################################
-###--------Independent Variables-------####
-###########################################
-
 #Age
 #Continuous numbers, no need for combination
 
@@ -203,14 +153,6 @@ qlfs$Industry <- ifelse( qlfs$Industry  == 8, 3, qlfs$Industry)
 
 
 #Education
-# qlfs$Education <- ifelse( qlfs$Education == 1
-#                         &qlfs$Education == 2, 1, qlfs$Education ) 
-# qlfs$Education <- ifelse( qlfs$Education == 3, 2 ,qlfs$Education)
-# qlfs$Education <- ifelse( qlfs$Education == 4, 3, qlfs$Education)
-# qlfs$Education <- ifelse( qlfs$Education == 5, 4, qlfs$Education)
-# qlfs$Education <- ifelse( qlfs$Education == 6, 5, qlfs$Education)
-
-
 # NumEmployee
 qlfs$NumEmployee <- ifelse(qlfs$NumEmployee  == 1
                       |qlfs$NumEmployee == 2
@@ -224,17 +166,11 @@ qlfs$NumEmployee <- ifelse(qlfs$NumEmployee  == 9, 3, qlfs$NumEmployee)
 
 
 #Occupation
-# No need to combine or change group catagories
-
-
 # Marital
 qlfs$Marital <- ifelse(!qlfs$Marital ==1 & 
                       !qlfs$Marital ==2, 3 , qlfs$Marital)
-
-
 #Religion
 qlfs$Religion <- ifelse(qlfs$Religion == 1, 1 ,2)
-
 
 #Ethnicity
 qlfs$Ethnicity <- ifelse(  qlfs$Ethnicity == 1 
@@ -248,7 +184,6 @@ qlfs$Ethnicity <- ifelse(  qlfs$Ethnicity == 5
 qlfs$Ethnicity <- ifelse( qlfs$Ethnicity  == 10, 3, qlfs$Ethnicity)
 qlfs$Ethnicity <- ifelse( qlfs$Ethnicity  == 4
                          |qlfs$Ethnicity == 11, 4, qlfs$Ethnicity)
-
 
 #workRegion
 qlfs$workRegion <- ifelse(qlfs$workRegion  == 20
@@ -274,24 +209,14 @@ qlfs$workRegion <- ifelse(qlfs$workRegion  == 12, 11, qlfs$workRegion)
 qlfs$workRegion <- ifelse(qlfs$workRegion  == 23, 12, qlfs$workRegion)
 qlfs$workRegion <- ifelse(qlfs$workRegion  == 22, 13, qlfs$workRegion)
 
-```
-
-<<<<<<< HEAD
-```{r label variables,echo=FALSE}
-=======
-```{r label variables, echo = FALSE}
->>>>>>> 0c6bd21f6259d9a3486645ae858efb6f7422a6a1
 # Create dataset facQlfs, which change all the categorical variable of qlfs to factor with labels, in order for further linear regression.
 facQlfs <- as.data.frame(qlfs)
 
 #Age
-
 #Sex
 facQlfs$Sex <- factor( facQlfs$Sex,
                         levels=c(1,2),
                         labels = c('Male','Female'))
-
-
 #Industry
 facQlfs$Industry <- factor( facQlfs$Industry,
                             levels = c(1,2,3,4),
@@ -299,7 +224,6 @@ facQlfs$Industry <- factor( facQlfs$Industry,
                                        'Banking, Finance',
                                        'Public admin, education, health',
                                        'Other'))
-
 #Education
 facQlfs$Education <- factor( facQlfs$Education, 
                              levels = c(1:6), 
@@ -309,15 +233,12 @@ facQlfs$Education <- factor( facQlfs$Education,
                                         'GCSE A*-C',
                                         'Other',
                                         'No'))
-
 #NumEmployee
 facQlfs$NumEmployee <- factor(facQlfs$NumEmployee,
                          levels=c(1,2,3),
                          c('Under 50',
                            'Under 500',
                            'Over 500'))
-
-
 #Occupation
 facQlfs$Occupation <- factor(facQlfs$Occupation,
                           levels=c(1:9),
@@ -330,24 +251,18 @@ facQlfs$Occupation <- factor(facQlfs$Occupation,
                             'Sales, Customer Service',
                             'Process, Plant, Machine Operatives',
                             'Elementary'))
-
-
 # MARSTA
 facQlfs$Marital <- factor( facQlfs$Marital, 
                            levels=c(1,2,3),
                            labels = c('Single','Married','Other'))
-
 #RELIG11
 facQlfs$Religion <- factor(facQlfs$Religion, 
                            levels=c(1,2),
                            labels = c('No','Yes'))
-
 #ETHGBEUL
 facQlfs$Ethnicity <-factor( facQlfs$Ethnicity, 
                             levels = c(1,2,3,4),
                             c('White','Asian','Black','Other')) 
-
-
 #REGWKR
 facQlfs$workRegion <- factor(facQlfs$workRegion,
                          levels = c(1:13),
@@ -364,7 +279,23 @@ facQlfs$workRegion <- factor(facQlfs$workRegion,
                            'South East',
                            'Outside UK',
                            'Northern Ireland'))
+
 ```
+
+To examine the above mentioned pay gap, data is applied from the Office of National Statistics *Quarterly Labour Force Survey* for the period of January to March 2017 (ONS, 2017). The dataset initially consisted of over 700 variables, which we have condensed to the 7 variables we found the most relevant. 
+
+In order to examine the relationship between salary and gender and explore the possibility of gender discrimination in the UK, we have included other variables which also may impact the pay gap. Hence, we define the dependent variable as *Salary* and the independent variables are defined as *sex (gender), age, industry sector, education qualifications, number of employees in the workplace and major occupation group,* respectively.
+  
+We have considered variables in our analysis such as ethnicity. It would be logical to include such variables as for instance, discrimination by ethnicity is a common occurrence and is still prevalent in present time and not completely eradicated. Ethnic pay gaps are resultant from either the the majority of the ethnic minority group going into more less well-paid careers or that they are merely generally paid less for doing the same kind of work (Brynin and Güveli, 2012). 
+
+However, we eventually dropped ethnicity as a variable as a large proportion of our dataset reflects white people which would greatly distort our analyses and study from the arising biasedness. For similar reasons, we have also dropped variables that are less significant in our regression models or display multicollinearity such that it influences the other variables in our model to a large extent - namely region of work, marital status and religion. This shortens our dataset further to just 7 variables in our regression model.
+  
+
+We implemented a linear regression model for this dataset. We treated salary as a dependent variable, and xxxxxxxxxxx as predictors. As the participants of the survey obtain weekly, monthly and yearly salaries, we converted the salaries to be on an annual basis. This is done where weekly salaries are multiplied by 52 and monthly salaries are multiplied by 12. The salary data is thus in a range of amounts of earnings. In order to implement a linear regression model, we therefore calculated the mean of each range.
+
+The majority of the variables are categorical in nature - except for the variable age. Therefore, we had to create many dummy variables depending on the level of each variable. 
+
+Several statistical tools in R were used in the analysis of the dataset. X and X libraries were used to help visualise the data and X and X used for y.
 
 
 Our final, clean, dataset contains 570 observations and 7 variables. These are outlined below.
@@ -378,9 +309,16 @@ Our final, clean, dataset contains 570 observations and 7 variables. These are o
 |`Industry`|Industry sector in main job|
 |`Education`|Highest qualification level|
 |`NumEmployee`|Number of employees at workplace|
-|`Religion`|...|
-|`MaritalStatus`|...|
-|`Ethnicity`  |...|
+|`Religion`|Religion GB level|
+|`MaritalStatus`|Marital status|
+|`Ethnicity`  |Ethnicity in GB|
+|`Region of workplace`  |Region of place of work|
+
+
+```{r}
+
+```
+
 
 
 # 4. Analysis
@@ -394,8 +332,19 @@ Our final, clean, dataset contains 570 observations and 7 variables. These are o
 
 
 ##### Sex
-```{r Sex,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60)}
-library(ggplot2)
+```{r}
+man <- c(415, 532, 686, 773, 764, 757, 749, 656, 621)
+woman <- c(366, 492, 573, 613, 568, 557, 529, 518, 405)
+ages <- c("21-25", "26-30", "31-35", "36-40", "41-45", "46-50", "51-55", "56-60", "60-65")
+dtmw <- data.frame(ages, man, woman)
+
+ggplot(dtmw) +geom_line(aes(x= ages, y=man,col='man'),group=1)+ geom_line(aes(x= ages, y=woman,col='woman'),group=2) + ylim(0,800)
+
+```
+
+
+```{r Sex,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
+
 
 # Sex
 ggplot(facQlfs,aes(x=Age,y=Salary,col=Sex))+ geom_point() + labs(title='Annually Salary Distribution of Gender',x='Age',y='Salary')+ theme(plot.title = element_text(hjust = 0.5))
@@ -407,7 +356,7 @@ ggplot(facQlfs,aes(x=Salary,col=Sex))+ geom_density() + labs(title='Annually Sal
 ```
 
 ##### Industry
-```{r Industry,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60)}
+```{r Industry,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
 # Industry
 ggplot(facQlfs,aes(x=Age,y=Salary,col=Industry))+ geom_point()+ labs(title='Annually Salary Distribution of Industry',x ='Age',y='Salary')+ theme(plot.title = element_text(hjust = 0.5))
 
@@ -419,7 +368,7 @@ ggplot(facQlfs,aes(x=Salary,col=Industry))+ geom_density()+ labs(title='Annually
 ```
 
 ##### Highest Education Level
-```{r Highest Educational Level,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60)}
+```{r Highest Educational Level,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
 # Education
 ggplot(facQlfs, aes(x=Education,y=Salary,col=Education))+ geom_boxplot()+ labs(title='Annually Salary distribution of Highest Education Qualification',x='Highest Education Qualification',y='Salary')+ theme(plot.title = element_text(hjust = 0.5), axis.text = element_text(angle= 45, hjust = 0.9))
 
@@ -429,7 +378,7 @@ ggplot(facQlfs, aes(x=Education,fill=Occupation))+ geom_bar(position=position_do
 
 ```
 
-```{r}
+```{r, echo = FALSE}
 # average salary of different groups
 facQlfs %>% select(Salary,Education) %>% group_by(Education) %>% summarise(mean(Salary))
 
@@ -439,7 +388,7 @@ facQlfs %>% select(Education,Occupation) %>%  group_by(Occupation) %>% filter(Ed
 ```
 
 ##### Employee Numbers in workplace
-```{r Employee Numbers in workplace,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60)}
+```{r Employee Numbers in workplace,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
 # NumEmployee
 ggplot(facQlfs, aes(x=Age,y=Salary,col=NumEmployee))+geom_point()+labs(title='Annually Salary distribution of Employee numbers in workplace',x='Age',y='Salary')+theme(plot.title = element_text(hjust = 0.5))
 
@@ -450,7 +399,7 @@ ggplot(facQlfs, aes(x=Salary,col=NumEmployee))+geom_density()+labs(title='Annual
 
 
 ##### Occupations
-```{r Occupations,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60)}
+```{r Occupations,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
 # Occupation
 ggplot(facQlfs, aes(x=Age,y=Salary,col=Occupation))+geom_point()+labs(title='Annually Salary distribution of Occupations',x='Age',y='Salary')+theme(plot.title = element_text(hjust = 0.5))
 
@@ -470,14 +419,14 @@ occupation education
 ### 3.1  Correlation analysis
 occupation industry
 occupation education
-```{r}
+```{r,echo = FALSE}
 cor.test(qlfs$Education,qlfs$Occupation)
 cor.test(qlfs$Industry,qlfs$Occupation)
 ```
 
 ### 3.2  Hypothesis test
 #### 3.2.1 T-test
-```{r}
+```{r,echo = FALSE}
 caring <-  facQlfs %>% select(Salary,Occupation) %>% filter(Occupation=="Caring, Leisure, Other Service")
 sales <-  facQlfs %>% select(Salary,Occupation) %>% filter(Occupation=="Sales, Customer Service")
 elem <- facQlfs %>% select(Salary,Occupation) %>% filter(Occupation=="Elementary")
@@ -489,7 +438,7 @@ t.test(sales$Salary,elem$Salary)
 
 
 #### 3.2.2 Chi-square test 
-```{r}
+```{r,echo = FALSE}
 chisq.test(table(facQlfs$Industry,facQlfs$Occupation))
 chisq.test(table(facQlfs$Education,facQlfs$Occupation))
 
@@ -497,7 +446,7 @@ chisq.test(table(facQlfs$Education,facQlfs$Occupation))
 
 
 ### 3.3  Linear regression
-```{r linear regression 1}
+```{r linear regression 1, echo=FALSE}
 facQlfs.lm1 <- lm(Salary ~ Education + Sex + 
                           Industry  + NumEmployee + 
                           Occupation,  data=facQlfs)
@@ -517,13 +466,13 @@ Null hypothesis for anova is that the mean(average value of the dependent variab
 
 
 
-```{r}
+```{r,echo = FALSE}
 ggplot(facQlfs.lm2,aes(y=facQlfs.lm1$residuals,x=facQlfs.lm2$fitted))+geom_point()
 
 qqnorm(facQlfs.lm2$residuals) 
 qqline(facQlfs.lm2$residuals)
 
-library(lmtest)
+
 bptest(Salary ~ Education + Sex + 
                           Industry  + NumEmployee + 
                           Occupation,  data=facQlfs)
@@ -538,3 +487,10 @@ bptest(Salary ~ Education + Sex +
 
 
 #6. References
+
+
+
+# Notes:
+parallel plots
+message table for results
+anova analysis

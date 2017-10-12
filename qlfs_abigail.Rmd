@@ -31,7 +31,8 @@ colnames(selected) <- c("Age","Sex","Industry","Education",
 #########################################
 
 #Salary
-selected <- selected[!selected$Salary==1 & !selected$Salary==2 & !selected$Salary==3 & !selected$Salary==-8 &!selected$Salary==-9,] 
+selected <- selected %>% filter(Salary!=1 & Salary!=2 & Salary!=3
+                                & Salary!=-8 & Salary!=-9)
 
 
 ###########################################
