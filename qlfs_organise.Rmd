@@ -283,23 +283,7 @@ facQlfs$workRegion <- factor(facQlfs$workRegion,
 
 ```
 
-To examine the above mentioned pay gap, data is applied from the Office of National Statistics *Quarterly Labour Force Survey* for the period of January to March 2017 (ONS, 2017). The dataset initially consisted of over 700 variables, which we have condensed to the 7 variables we found the most relevant. 
-
-In order to examine the relationship between salary and gender and explore the possibility of gender discrimination in the UK, we have included other variables which also may impact the pay gap. Hence, we define the dependent variable as *Salary* and the independent variables are defined as *sex (gender), age, industry sector, education qualifications, number of employees in the workplace and major occupation group,* respectively.
-  
-We have considered variables in our analysis such as ethnicity. It would be logical to include such variables as for instance, discrimination by ethnicity is a common occurrence and is still prevalent in present time and not completely eradicated. Ethnic pay gaps are resultant from either the the majority of the ethnic minority group going into more less well-paid careers or that they are merely generally paid less for doing the same kind of work (Brynin and Güveli, 2012). 
-
-However, we eventually dropped ethnicity as a variable as a large proportion of our dataset reflects white people which would greatly distort our analyses and study from the arising biasedness. For similar reasons, we have also dropped variables that are less significant in our regression models or display multicollinearity such that it influences the other variables in our model to a large extent - namely region of work, marital status and religion. This shortens our dataset further to just 7 variables in our regression model.
-  
-
-We implemented a linear regression model for this dataset. We treated salary as a dependent variable, and xxxxxxxxxxx as predictors. As the participants of the survey obtain weekly, monthly and yearly salaries, we converted the salaries to be on an annual basis. This is done where weekly salaries are multiplied by 52 and monthly salaries are multiplied by 12. The salary data is thus in a range of amounts of earnings. In order to implement a linear regression model, we therefore calculated the mean of each range.
-
-The majority of the variables are categorical in nature - except for the variable age. Therefore, we had to create many dummy variables depending on the level of each variable. 
-
-Several statistical tools in R were used in the analysis of the dataset. X and X libraries were used to help visualise the data and X and X used for y.
-
-
-Our final, clean, dataset contains 570 observations and 7 variables. These are outlined below.
+To examine the aforementioned pay gap we have used data from the Office of National Statistics *Quarterly Labour Force Survey* for the period of January to March 2017 (ONS, 2017). The dataset initially consisted of 88,528 observations of 739 variables. Our final dataset contains 570 observations of 7 variables. These are outlined below.
 
 |Variable                |Description                                       |
 |:-----------------------|:-------------------------------------------------|
@@ -312,8 +296,14 @@ Our final, clean, dataset contains 570 observations and 7 variables. These are o
 |`NumEmployee`           |Number of employees at workplace|
 |`Religion`              |Religion GB level|
 |`MaritalStatus`         |Marital status|
-|`Ethnicity`             |Ethnicity in GB|
+|`Ethnicity`             |Ethnicity of respondent in GB|
 |`Region of workplace`   |Region of place of work|
+
+
+In order to examine the relationship between salary and gender and explore the possibility of gender discrimination in the UK, we have included other variables which also may impact the pay gap. Hence, we define the dependent variable as *Salary* and the independent variables are defined as *sex (gender), age, industry sector, education qualifications, number of employees in the workplace and major occupation group,* respectively.
+  
+
+
 
 
 ```{r, echo=FALSE,results='asis'}
@@ -399,7 +389,10 @@ kable(industrytable,align='l')
 ```{r Highest Educational Level,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
 # Education
 ggplot(facQlfs, aes(x=Education,y=Salary,col=Education))+ geom_boxplot()+ labs(title='Annually Salary distribution of Highest Education Qualification',x='Highest Education Qualification',y='Salary')+ theme(plot.title = element_text(hjust = 0.5), axis.text = element_text(angle= 45, hjust = 0.9))
+```
 
+MAYBE REMOVE BELOW
+```{r exploring occupation and education}
 ggplot(facQlfs, aes(x=Occupation,fill=Education))+ geom_bar(position=position_dodge())+ labs(title='Highest Education Qualification distribution by Occupation',x='Occupation',y='Count')+ theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 50, hjust = 0.9,size=6))
 
 ggplot(facQlfs, aes(x=Education,fill=Occupation))+ geom_bar(position=position_dodge())+ labs(title='Occupation distribution among Highest Education Qualification',x='Occupation',y='Count')+ theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))
@@ -414,6 +407,8 @@ facQlfs %>% select(Salary,Education) %>% group_by(Education) %>% summarise(mean(
 facQlfs %>% select(Education,Occupation) %>%  group_by(Occupation) %>% filter(Education=='Degree')  %>% summarise(percent=n()/173*100)
 
 ```
+
+
 ```{r}
 eductable<- facQlfs %>% select(Education,Salary) %>% group_by(Education) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
 kable(eductable,digits = 0, align=c('l','c','r'), caption = 'Salary Mean and Standard Deviation by Education')
@@ -451,6 +446,10 @@ occuptable<- facQlfs %>% select(Occupation,Salary) %>% group_by(Occupation) %>% 
 kable(occuptable,digits = 0, align='l', caption = 'Salary Mean and Standard Deviation by Occupation')
 ```
 
+#### Religion
+#### Ethnicity
+#### Region of Workplace
+
 ### 4.1.2 Bivariate descriptive 
 occupation industry
 occupation education
@@ -475,6 +474,11 @@ t.test(caring$Salary,sales$Salary)
 t.test(caring$Salary,elem$Salary)
 t.test(sales$Salary,elem$Salary)
 
+pairwise.t.test(facQlfs$Salary,facQlfs$Education)
+pairwise.t.test(facQlfs$Salary,facQlfs$Sex)
+pairwise.t.test(facQlfs$Salary,facQlfs$Industry)
+pairwise.t.test(facQlfs$Salary,facQlfs$NumEmployee)
+pairwise.t.test(facQlfs$Salary,facQlfs$Occupation)
 ```
 
 
