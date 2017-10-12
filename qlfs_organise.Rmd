@@ -321,16 +321,38 @@ library(knitr)
 
 # Industry
 industry <- facQlfs %>% select(Industry) %>% group_by(Industry)%>% summarise(count=n())
-kable(industry,col.names =c('Industry Type','#Individuals'))
+kable(industry,col.names =c('Industry Type','#Individuals'),caption = 'Industry summary')
 
 # Education
 edu <- facQlfs %>% select(Education) %>% group_by(Education) %>% summarise(count=n())
-kable(edu,col.names =c('Education Type','#Individuals'))
+kable(edu,col.names =c('Education Type','#Individuals'),caption='Education summary')
 
 #NumEmployee
 num_employee <-facQlfs %>% select(NumEmployee) %>% group_by(NumEmployee) %>% summarise(count=n())
-kable(num_employee)
+kable(num_employee,col.names =c('Number of Employees', '#Individuals'),caption='Number of Employees Summary')
 
+#Occupation
+occupation <- facQlfs %>% select(Occupation) %>% group_by(Occupation) %>% summarise(count=n())
+kable(occupation,col.names = c('Occupation type','#Individuals'),caption='Occupation Summary')
+
+#Marital
+marital <- facQlfs %>% select(Marital) %>% group_by(Marital) %>% summarise(count=n())
+kable(marital,col.names=c('Marital status','#Individuals'),caption='Marital Status Summary')
+
+
+#Religion
+religion <- facQlfs %>% select(Religion) %>% group_by(Religion) %>% 
+summarise(count=n())
+kable(religion,col.names = c('Religion Type','#Individuals'),caption = 'Religion Summary')
+
+
+#Ethnicity
+ethnicity <- facQlfs %>% select(Ethnicity) %>% group_by(Ethnicity) %>% summarise(count=n())
+kable(ethnicity,col.names = c('Ethnicity Type','#Individuals'),caption = 'Ethnicity Summary')
+
+#WorkRegion
+workregion <- facQlfs %>% select(Ethnicity) %>% group_by(Ethnicity) %>% summarise(count=n())
+kable(ethnicity,col.names = c('Regions of Workplace','#Individuals'),caption=' Work regions Summary')
 ```
 
 
@@ -481,7 +503,7 @@ facQlfs.lm1 <- lm(Salary ~Education + Sex +
                           Industry  + NumEmployee + 
                           Occupation +Marital + Religion +Ethnicity +workRegion,data=facQlfs )
 summary(facQlfs.lm1)
-anova(facQlfs.lm1)
+
 
 # Drop less significant variables
 facQlfs.lm2 <- lm(Salary ~ Education + Sex + 
