@@ -12,20 +12,26 @@ knitr::opts_chunk$set(echo = TRUE)
 
 #1. Introduction
 
-Discrimination has long been a controversial topic. Forms of discrimination can range greatly but over the last few decades, one notable form of discrimination has been the phenomenon of an income gap that has existed in society (Blinder, 1973). The European Commission defines gender pay gap as “the difference between men’s and women’s pay, based on the average difference in gross hourly earnings of all employees” (European Commission, 2017). In recent years especially, addressing the gender related pay gap has been a policy matter of many countries namely those belonging to the EU (European Union, 2014). 
- 
+Discrimination has long been a controversial topic. Forms of discrimination can range greatly but over the last few decades, one notable form of discrimination has been the phenomenon of an income gap that has existed in society (Blinder, 1973). A widely discussed form of this discrepancy in income is gender. The European Commission defines gender pay gap as “the difference between men“s and women“s pay, based on the average difference in gross hourly earnings of all employees“ (European Commission, 2017). In recent years especially, addressing the gender-related pay gap has been a policy matter of many countries namely those belonging to the EU (European Union, 2014). 
 
-The United Nations (2017), aims to remove all gender discrimination to ensure gender equality, and according to the European Commission (2017), gender discrimination is prohibited under European law. However, the Office for National Statistics (2017) states that female full-time employees in the UK earn on average 9.4 percent less than male full-time employees in 2016. This raises the question if gender pay discrimination currently exists in the UK, or if there are other drivers affecting the differences in salary levels.
- 
-Consequently, this report aims to identify if there currently exists gender pay discrimination in the UK whilst considering other factors which may affect the pay gap such as differences in where and how people in the UK tend to work. 
+According to the United Nations (2017), there are aims to alleviate the issue of gender discrimination to ensure gender equality. The European Commission (2017) does state that gender discrimination is prohibited under European law. However, the Office for National Statistics (2017) states that female full-time employees in the UK earn on average 9.4 percent less than male full-time employees in 2016. This raises the question if gender pay discrimination currently exists in the UK, and or if there are other drivers affecting the differences in salary levels.
 
-These results would help to make suggestions regarding salary policies leading to a minimisation of the pay gap.
+Consequently, this report aims to identify if pay discrimination currently exists in the United Kingdom. To examine this, we will use data from the Office of National Statistics *Quarterly Labour Force Survey* for the period of January to March 2017 (ONS, 2017). We will consider factors which may affect the pay gap such as differences in where and how people in the UK tend to work/[namely nature (e.g. ethnicity) and nurture factors (occupation, region of work).  Following investigation of the variables and linear regressions, we hope to make inferences that would aid policy creation that aims to minimise the pay gap.
+
 
 #2. Theory 
+note: What do you expect to find?
 
+Our null hypothesis is that all the predictors will not have a significant effect on salary. The alternative hypothesis is that the predictors do have a significant effect on salary.
+
+We are interested in investigating whether this apparent income gap is a result of actual gender discrimination, which would be in accordance with our resources, or whether this phenomenon arises as a result of other variables' influences. We will thus investigate it in a linear regression model with relevant variables. 
+
+In that aspect, we want to determine other possible causes of the income gap and whether working in different industry sectors or having different educational qualifications can affect salary when included in a linear regression model with salary as the independent variable.
+
+(OR Our theory is that we believe, in line with our resources, that gender discrimination is still present in today's society. This will mean that in theory, we will expect that gender will have an effect on salary.)
 
 #3. Methods
-```{r load data, echo=FALSE,message=FALSE}
+```{r load data, echo=FALSE, message=FALSE}
 library(dplyr)
 library(haven)
 library(ggplot2)
@@ -33,6 +39,8 @@ library(lmtest)
 library(knitr)
 alldata <- read_dta("lfsp_jm17_eul.dta")
 ```
+
+
 ## 3.1 Data Description
 ```{r clean dataset, echo = FALSE}
 #Created smaller manageable dataset from larger one which included variables we pre-selceted to explore + filtered data to remove observations where individuals did not answer or ...
@@ -70,6 +78,7 @@ selected <- selected %>% filter(workRegion!=-8 & workRegion!=-9 & workRegion!=2)
 qlfs <- as.data.frame(selected)
 
 #Converted salary from interval to continuous data in order to perform linear regression
+# weekly salaries are multiplied by 52 and monthly salaries are multiplied by 12. The salary data is thus in a range of amounts of earnings. In order to implement a linear regression model, we therefore calculated the mean of each range.
 
 #BANDG
 value_vec <- c('1.1','1.10','1.11','1.12','1.13','1.14','1.15','1.16','1.17',
@@ -283,7 +292,7 @@ facQlfs$workRegion <- factor(facQlfs$workRegion,
 
 ```
 
-To examine the aforementioned pay gap we have used data from the Office of National Statistics *Quarterly Labour Force Survey* for the period of January to March 2017 (ONS, 2017). The dataset initially consisted of 88,528 observations of 739 variables. Our final dataset contains 570 observations of 7 variables. These are outlined below.
+The dataset initially consisted of 88,528 observations of 739 variables. In order to examine the relationship between salary and gender and explore the possibility of gender discrimination in the UK, we have selected variables which also may impact the pay gap. Our final dataset contains 570 observations of 7 variables. These are outlined below.
 
 |Variable                |Description                                       |
 |:-----------------------|:-------------------------------------------------|
@@ -299,16 +308,11 @@ To examine the aforementioned pay gap we have used data from the Office of Natio
 |`Ethnicity`             |Ethnicity of respondent in GB|
 |`Region of workplace`   |Region of place of work|
 
-
-In order to examine the relationship between salary and gender and explore the possibility of gender discrimination in the UK, we have included other variables which also may impact the pay gap. Hence, we define the dependent variable as *Salary* and the independent variables are defined as *sex (gender), age, industry sector, education qualifications, number of employees in the workplace and major occupation group,* respectively.
-  
-
-
-
+```{r}
+summary(facQlfs)
+```
 
 ```{r, echo=FALSE,results='asis'}
-library(knitr)
-
 # Industry
 industry <- facQlfs %>% select(Industry) %>% group_by(Industry)%>% summarise(count=n())
 kable(industry,col.names =c('Industry Type','#Individuals'))
@@ -323,9 +327,13 @@ kable(edu,col.names =c('Education Type','#Individuals'))
 ```
 
 
-
-
 ## 3.2 Strength and limitations
+
+
+
+
+
+
 
 #4. Analysis
 ## 4.1 Descriptive statistics
