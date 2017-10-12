@@ -323,9 +323,11 @@ kable(summary(facQlfs$Industry))
 
 
 
-# 4. Analysis
-### 4.1 Descriptive statistics
-#### 4.1.1 Univariate descriptive of variables
+## 3.2 Strength and limitations
+
+#4. Analysis
+## 4.1 Descriptive statistics
+### 4.1.1 Univariate descriptive of variables
 - central tendency (mean, mode, median)
 - dispersion (range, variance, maximum, minimum, quartiles & IQR, std.)
 - frequency distribution tables
@@ -417,13 +419,13 @@ ggplot(facQlfs, aes(x=Salary))+geom_density()+labs(title='Annually Salary distri
 ```
 
 
-#### 4.2 Bivariate descriptive 
+### 4.1.2 Bivariate descriptive 
 occupation industry
 occupation education
 
 
-## 4.3 Analysis
-### 4.3.1  Correlation analysis
+
+## 4.2  Correlation analyses
 occupation industry
 occupation education
 ```{r,echo = FALSE}
@@ -431,8 +433,8 @@ cor.test(qlfs$Education,qlfs$Occupation)
 cor.test(qlfs$Industry,qlfs$Occupation)
 ```
 
-### 4.3.2  Hypothesis test
-#### 3.2.1 T-test
+## 4.3  Hypothesis tests
+#### 4.3.1 T-tests
 ```{r,echo = FALSE}
 caring <-  facQlfs %>% select(Salary,Occupation) %>% filter(Occupation=="Caring, Leisure, Other Service")
 sales <-  facQlfs %>% select(Salary,Occupation) %>% filter(Occupation=="Sales, Customer Service")
@@ -444,7 +446,7 @@ t.test(sales$Salary,elem$Salary)
 ```
 
 
-#### 3.2.2 Chi-square test 
+#### 4.3.2 Chi-square tests 
 ```{r,echo = FALSE}
 chisq.test(table(facQlfs$Industry,facQlfs$Occupation))
 chisq.test(table(facQlfs$Education,facQlfs$Occupation))
@@ -452,7 +454,7 @@ chisq.test(table(facQlfs$Education,facQlfs$Occupation))
 ```
 
 
-### 4.3.3  Linear regression
+## 4.4  Linear regression
 ```{r linear regression 1, echo=FALSE}
 # All variables included
 facQlfs.lm1 <- lm(Salary ~Education + Sex + 
@@ -491,8 +493,11 @@ bptest(Salary ~ Education + Sex +
 ```
 
 
-#5. Conclusion
 
+#5. Discussion
+## 5.1 What results did you find
+## 5.2 Why is it interesting
+## 5.3 What would be the next steps
 
 
 
@@ -504,3 +509,4 @@ bptest(Salary ~ Education + Sex +
 parallel plots
 message table for results
 anova analysis
+t-test tables
