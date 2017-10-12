@@ -406,23 +406,6 @@ kable(industrytable,align='l')
 ggplot(facQlfs, aes(x=Education,y=Salary,col=Education))+ geom_boxplot()+ labs(title='Annually Salary distribution of Highest Education Qualification',x='Highest Education Qualification',y='Salary')+ theme(plot.title = element_text(hjust = 0.5), axis.text = element_text(angle= 45, hjust = 0.9))
 ```
 
-MAYBE REMOVE BELOW
-```{r exploring occupation and education}
-ggplot(facQlfs, aes(x=Occupation,fill=Education))+ geom_bar(position=position_dodge())+ labs(title='Highest Education Qualification distribution by Occupation',x='Occupation',y='Count')+ theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 50, hjust = 0.9,size=6))
-
-ggplot(facQlfs, aes(x=Education,fill=Occupation))+ geom_bar(position=position_dodge())+ labs(title='Occupation distribution among Highest Education Qualification',x='Occupation',y='Count')+ theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))
-
-```
-
-```{r, echo = FALSE}
-# average salary of different groups
-facQlfs %>% select(Salary,Education) %>% group_by(Education) %>% summarise(mean(Salary))
-
-# degree level occupation distribution
-facQlfs %>% select(Education,Occupation) %>%  group_by(Occupation) %>% filter(Education=='Degree')  %>% summarise(percent=n()/173*100)
-
-```
-
 
 ```{r}
 eductable<- facQlfs %>% select(Education,Salary) %>% group_by(Education) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
@@ -432,11 +415,9 @@ kable(eductable,digits = 0, align=c('l','c','r'), caption = 'Salary Mean and Sta
 #### Employee Numbers in workplace
 ```{r Employee Numbers in workplace,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
 # NumEmployee
-ggplot(facQlfs, aes(x=Age,y=Salary,col=NumEmployee))+geom_point()+labs(title='Annually Salary distribution of Employee numbers in workplace',x='Age',y='Salary')+theme(plot.title = element_text(hjust = 0.5))
-
 ggplot(facQlfs, aes(x=NumEmployee,y=Salary,col=NumEmployee))+geom_boxplot()+labs(title='Salary distribution of Employee numbers in workplace',x='Employee Numbers',y='Salary')+theme(plot.title = element_text(hjust = 0.5))
 
-ggplot(facQlfs, aes(x=Salary,col=NumEmployee))+geom_density()+labs(title='Annually Salary distribution of Employee numbers in workplace',x='Salary',y='Density')+theme(plot.title = element_text(hjust = 0.5))
+
 ```
 
 ```{r}
@@ -447,11 +428,8 @@ kable(numemploytable,digits = 0, align=c('l','l','r'), caption = 'Salary Mean an
 #### Occupations
 ```{r Occupations,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
 # Occupation
-ggplot(facQlfs, aes(x=Age,y=Salary,col=Occupation))+geom_point()+labs(title='Annually Salary distribution of Occupations',x='Age',y='Salary')+theme(plot.title = element_text(hjust = 0.5))
-
 ggplot(facQlfs, aes(x=Occupation,y=Salary,col=Occupation))+geom_boxplot()+labs(title='Salary distribution of Occupations',x='Occupations',y='Salary')+theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))
 
-ggplot(facQlfs, aes(x=Salary))+geom_density()+labs(title='Annually Salary distribution of Occupations',x='Salary',y='Density')+theme(plot.title = element_text(hjust = 0.5))+ facet_wrap(~Occupation)
 
 ```
 
