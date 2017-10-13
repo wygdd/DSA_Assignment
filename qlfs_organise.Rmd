@@ -1,6 +1,6 @@
 ---
 title: "Maths and Statistics Foundations Project"
-author: "Group N"
+author: "Team N: 01380750,01408680,01436826,01429506,01453725,01275660"
 date: "06/10/2017"
 output:
   html_document: default
@@ -690,7 +690,10 @@ The applicability of the conceived model on other countries with similar socio-e
 A person’s salary is of interest in various situations: Landlords need income proofs for security and banks evaluate the eligibility of a credit card for a customer. This is all dependent on the person’s regular income. Satisfying the conditions for obtaining a loan is likely to be based off a person’s salary level. Furthermore, determining an individuals salary and therefore willingness to pay could allow for retail companies to take part in 1st degree price discrimination. Tailoring offerings on an individual level would achieve better company returns and increase profit making possibilities of the company. Moreover, data is already being gathered by such companies in the form of loyalty cards and therefore integrating a developed version of our model could enable this theoretical optimal situation to become reality.
 
 
-#6. References
+#6. Project Github Repository
+([Link for Project Github Repository](https://github.com/wygdd/MSF_Project)) 
+
+#7. References
 
 European Union (2014) ‘Tackling the gender pay gap in the European Union’, pp. 15. [Accessed 10 October 2017]
 Available at: http://ec.europa.eu/justice/gender-equality/files/gender_pay_gap/140319_gpg_en.pdf
