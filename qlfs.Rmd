@@ -1,10 +1,9 @@
 ---
 title: "Maths and Statistics Foundations Project"
 author: "Team N: 01380750,01408680,01436826,01429506,01453725,01275660"
-date: "06/10/2017"
 output:
-  html_document: default
-  pdf_document: default
+  rmarkdown::html_document:
+    theme: lumen
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -48,6 +47,8 @@ library(knitr)
 library(stargazer)
 library(gridExtra)
 library(texreg)
+library(broom)
+library(purrr)
 alldata <- read_dta("lfsp_jm17_eul.dta")
 ```
 
@@ -407,7 +408,7 @@ ggplot(dtmw) +geom_line(aes(x= ages, y=man,col='male'),group=1)+geom_point(aes(x
 
 This initial observation, along with the above plot, seems to corroborate that males on average get higher salaries than females.
 
-```{r table sex mean sd.,out.width="60%", echo=FALSE}
+```{r table sex mean sd.,out.width="70%", echo=FALSE}
 sextable<- facQlfs %>% select(Sex,Salary) %>% group_by(Sex) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
 kable(sextable,align='l')
 ```
@@ -437,15 +438,14 @@ kable(industrytable,align='l')
 ggplot(facQlfs, aes(x=Occupation,y=Salary,col=Occupation))+geom_boxplot()+labs(title='Salary distribution of Occupations',x='Occupations',y='Salary')+theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))
 ```
 
-```{r}
+There is a visible difference in Skilled Trades to Caring, Leisure and Other Services. This suggests that people who are highly trained have higher salaries than less skilled individuals. Managers, Directors, Senior Officials and professional groups tend to earn the highest salary amongst the 9 groups. In the high-earning sectors, the Skilled Trades category earns more than the Administrative and Secretarial group. On the other hand, salaries for groups “Sales and Customer Service” and “Elementary” are not significantly different from each other. Furthermore, both of them are in the lower earning sector. 
+
+The median full-time gross weekly earnings for 2014 ([Annual Survey of Hours and Earnings, 2015](https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/bulletins/annualsurveyofhoursandearnings/2015provisionalresults#earnings-by-occupation)) demonstrated that different occupation groups would have different medians. As the skill level increases, the median earning follows. This aligns with the results observed so far.
+
+```{r,echo = FALSE}
 occuptable<- facQlfs %>% select(Occupation,Salary) %>% group_by(Occupation) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
 kable(occuptable,digits = 0, align='l', caption = 'Salary Mean and Standard Deviation by Occupation')
 ```
-
-There is a visible shift in from Skilled Trades to Caring, Leisure and Other Services. This suggests that people who are highly trained have higher salaries than less skilled individuals. Managers, Directors,Senior Officials and professional groups tend to earn the highest salary amongst the 9 groups. In the high earning sectors, the Skilled Trades category earns more than the Administrative and Secretarial group. On the other hand, salary for groups “Sales and Customer Service” and “Elementary” are not significantly different from each other. Furthermore, both of them are in the lower earning sector. 
-
-As ([click for the web link](https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/bulletins/annualsurveyofhoursandearnings/2015provisionalresults#earnings-by-occupation)) the median full-time gross weekly earnings for 2014 (Annual Survey of Hours and Earnings, 2015) show, different occupation groups have different medians. As the skill level increases, the median earning follows. This aligns with the results observed so far.
-
 
 #### Highest Education Level
 ```{r Highest Educational Level,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
@@ -455,22 +455,20 @@ ggplot(facQlfs, aes(x=Education,y=Salary,col=Education))+ geom_boxplot()+ labs(t
 
 Earnings are related to the highest education qualification of employees. In general, people with higher education qualification levels earn higher incomes. A distinctive difference between median salaries can be observed from the above box plot, where employees holding degree qualifications earn on average 33% more than those with a higher education qualification. Apart from the median salary level, a higher IQR also suggests that people with a higher education level, especially the ones with degrees, earn a higher income in general than other groups.
  
-
-```{r Education Occupation Industry,echo = FALSE}
+```{r Education Occupation Industry,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
 ggplot(facQlfs, aes(x=Occupation,fill=Education))+ geom_bar(position=position_dodge())+ labs(title='Highest Education Qualification distribution by Occupation',x='Occupation',y='Count')+ theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 50, hjust = 0.9,size=6))
 ```
 
-By further investigating the education qualification distribution by the different occupations, the above figure shows that employees accepted professional high level trainings in higher education with degrees account the majority part of people in professional. They usually work in managerial or occupations demanding a higher skillset.  Employees having lower level of qualifications are more likely to work in service and operative occupations like caring, customer service and machine operatives. However, employees holding lower qualifications are not barred from working in high-skilled occupations. Around 47% of people educated to a degree level work as professionals. This can be compared to a 14% distribution in the second largest occupation group, managers, directors and senior officials. 
+By further investigating the education qualification distribution among the different occupations, the above figure shows that people with degrees are mostly employed in professional jobs. They usually work in managerial or occupations which naturally would demand a greater skillset.  Employees having lower level of qualifications are more likely to work in service and operative occupations like caring, customer service and machine operatives. However, employees holding lower qualifications are not barred from working in high-skilled occupations. Around 47% of people educated to a degree level work as professionals. This can be compared to a 14% distribution in the second largest occupation group, managers, directors and senior officials. 
 
-```{r}
+```{r,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
 ggplot(facQlfs, aes(x=Industry,fill=Education))+ geom_bar(position=position_dodge())+ labs(title='Highest Education Qualification distribution by Industry',x='Industry',y='Count')+ theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 50, hjust = 0.9,size=6))
 ```
 
+By looking at the bar chart of industry sector by education, the majority of people who have a degree go into public admission, education, and health fields instead of banking and finance. This is interesting as we would have expected from our previous analysis that those who work in banking and finance would earn more than the other fields. Moreover, this implies that an individual is restricted in what industry sector he or she can enter if not equipped with any educational qualification.
 
-By looking at the bar chart of industry sector by education, the majority of people who have a degree go into public admission, education, and health fields instead of Banking and Finance. This is interesting as we would have expected from our previous analysis on Industry that indicated that those who work in Banking and Finance would earn more than other fields. Moreover, this shows that one is restricted in what industry sector he or she can enter if not equipped with any educational qualification, namely in Banking or Finance.
 
-
-```{r}
+```{r,echo=FALSE}
 eductable<- facQlfs %>% select(Education,Salary) %>% group_by(Education) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
 kable(eductable,digits = 0, align=c('l','c','r'), caption = 'Salary Mean and Standard Deviation by Education')
 ```
@@ -484,7 +482,7 @@ ggplot(facQlfs, aes(x=NumEmployee,y=Salary,col=NumEmployee))+geom_boxplot()+labs
 
 The highest median salary can clearly be found for workplace of over 500 employees. However, the difference between categories under 50 and 500 is not as clear. Overall, the main difference lies between falling in the over 500 employee category, where an effect on salary is clear, and anything below, where there is no significant effect.
 
-```{r}
+```{r,echo=FALSE}
 numemploytable<- facQlfs %>% select(NumEmployee,Salary) %>% group_by(NumEmployee) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
 kable(numemploytable,digits = 0, align=c('l','l','r'), caption = 'Salary Mean and Standard Deviation by # of Employees')
 ```
@@ -494,17 +492,17 @@ kable(numemploytable,digits = 0, align=c('l','l','r'), caption = 'Salary Mean an
 # Religion
 ggplot(facQlfs, aes(x=Religion,y=Salary,col=Religion))+geom_boxplot()+labs(title='Salary distribution by Religion',x='Religion',y='Salary')+theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))
 ```
-```{r}
+```{r,echo=FALSE}
 religiontable<- facQlfs %>% select(Religion,Salary) %>% group_by(Religion) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
 kable(religiontable,digits = 0, align=c('l','l','r'), caption = 'Salary Mean and Standard Deviation by Religion')
 ```
 
-It seems like there is no big difference between individuals who have a religion and those who have not and the median are not really different from each other. Maybe this variable does not effecting the people’s salary. 
+It seems like there is no big difference between individuals who have a religion and those who do not. The medians are not really different from each other. It may be possible that this variable does not affect salary. 
 
-#### Marital
+#### Marital Status
 ```{r Marital,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
 # Marital
-ggplot(facQlfs, aes(x=Marital,y=Salary,col=Marital))+geom_boxplot()+labs(title='Salary distribution by Marital',x='Marital',y='Salary')+theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))
+ggplot(facQlfs, aes(x=Marital,y=Salary,col=Marital))+geom_boxplot()+labs(title='Salary distribution by Marital Status',x='Marital Status',y='Salary')+theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))+scale_color_discrete(name='Marital Status')
 ```
 
 Married individuals have a slightly higher median than those who are single or other (i.e. widow or divorced). There is only a slight difference between single and other; only the range of percentile is different.
@@ -516,13 +514,12 @@ Married individuals have a slightly higher median than those who are single or o
 ggplot(facQlfs, aes(x=Ethnicity,y=Salary,col=Ethnicity))+geom_boxplot()+labs(title='Salary distribution by Ethnicity',x='Ethnicity',y='Salary')+theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))
 ```
 
-```{r}
+```{r,echo=FALSE}
 ethtable<- facQlfs %>% select(Ethnicity,Salary) %>% group_by(Ethnicity) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
 kable(ethtable,digits = 0, align=c('l','l','r'), caption = 'Salary Mean and Standard Deviation by Ethnicity')
 ```
 
-The median for four group are essentially the same. But the quantile range is different. Focusing on black, the majority of people have lower income around 15000 pounds per year.
-
+The median for the four groups are essentially the same. However, the quantile range is different. Focusing on black people, the majority of people have a lower income of around 15000 pounds per year.
 
 #### Region of Workplace
 ```{r Region of Workplace,out.width="70%", fig.align="center",tidy=TRUE,tidy.opts=list(width.cutoff=60),echo = FALSE}
@@ -530,28 +527,30 @@ The median for four group are essentially the same. But the quantile range is di
 ggplot(facQlfs, aes(x=workRegion,y=Salary,col=workRegion))+geom_boxplot()+labs(title='Salary distribution by Region of Workplace',x='Region of Workplace',y='Salary')+theme(plot.title = element_text(hjust = 0.5),axis.text = element_text(angle= 45, hjust = 0.9))
 ```
 
-```{r}
+```{r,echo=FALSE}
 workregtable<- facQlfs %>% select(Religion,Salary) %>% group_by(Religion) %>% summarise(Mean=mean(Salary),'Standard Deviation'=sd(Salary))
 kable(workregtable,digits = 0, align=c('l','l','r'), caption = 'Salary Mean and Standard Deviation by Region of Workplace')
 ```
 
-The various regions of workplace have a similar median value as well as a similar quantile range. Only the ‘Outside UK’ category is different, however as there are only a few observations who fall into that category, this can be ignored as significant.
+The various regions of workplace have similar median values as well as similar quantile ranges. It can be noted that only the ‘Outside UK’ category is different. However as there are only a few observations that fall into that category, they would be insignificant as not much information can be drawn from it.
 
 ## 4.2  Hypothesis tests
-Prior to running a regression, further investigation into the variables is required. The correlation between age and salary will be checked. Furthermore, as there may be some association between occupation, industry sectors and education, a Chi-Square test for Independence is used to check this.
+Prior to running a regression, further investigation into the variables is required. The correlation between age and salary will be checked. Furthermore, as there may be some association between occupation, industry sectors and education, a Chi-Square test for independence is used to check this.
+
 
 ### 4.2.1  Correlation Tests
 $H_o$: There is no linear relationship between age and salary.
+
 $H_a$: There is a linear relationship between age and salary.
 ```{r,echo = FALSE,message=FALSE}
 cor.test(qlfs$Age,qlfs$Salary)
 ```
 
-The p-value is 0.00378. This is smaller than 0.05 significant level, therefore $H_o$ can be rejected and conclude, therefore, that there is a linear relationship between age and salary.
-The correlation is 0.152. This is relatively small and as such there is a weak positive relationship between age and salary.
+The p-value is 0.00378. This is smaller than a significance level of 0.05, therefore $H_o$ can be rejected. It can therefore be concluded that there is a linear relationship between age and salary. The correlation is 0.152. This is relatively small and as such, there is a weak positive relationship between age and salary.
 
-### 4.2.2 Chi-Squared Tests for Independence
+###4.2.2 Chi-Squared Tests for Independence
 $H_o$: The two categorical variables are independent from each other.
+
 $H_a$: The two categorical variables are not independent from each other.
 
 ```{r,echo = FALSE}
@@ -560,45 +559,49 @@ chisq.test(table(facQlfs$Education,facQlfs$Occupation))
 
 ```
 
-The p-value are far smaller than the 0.1% significance level for both tests. This means $H_o$ can be rejected and conclude that there is an association between education and industry as well as education and occupation.
-
+The p-values are far smaller than the significance level of 0.1% for both tests. This means $H_o$ can be rejected. It can thus be concluded that there is an association between education and industry as well as education and occupation.
 
 ## 4.3  Multiple Linear Regression with full dataset
 
-```{r linear regression 1,results='asis'}
-# All variables included
-facQlfs.lm1 <- lm(Salary~ Age+ Education+Sex+Industry
-                  +NumEmployee+Occupation+Marital+Religion
-                  +Ethnicity+workRegion,data=facQlfs )
-stargazer(facQlfs.lm1, type = "html", header = FALSE)
+```{r linear regression 1}
+facQlfs.lm1 <- lm(Salary~ Age+Education+Sex+Industry+NumEmployee+Occupation+Marital+Religion+Ethnicity+workRegion,data=facQlfs )
+```
+
+```{r,echo=FALSE,results='asis'}
+stargazer(facQlfs.lm1, type = "html", header = FALSE,style = "qje", 
+          font.size = "scriptsize", no.space = TRUE)
 ```
 
 
-Based on the statistical summary, 4 variables (Religion, Marital Status, Ethnicity and Region of Workplace appear not to be significant at a 5% level of significance. In other words, regardless of which category an individual falls into within those 4 variables, it will not have significant effect on the salary they are earning based on the model. This result supports the lack of difference between categories that was observed in the exploratory data analysis of these variables. Furthermore dropping these variables contributes to achieving a parsimonious model.
-Based on the Chi-Square independence test, Since they are not independent from each other, we tried to drop one of them and reduce the model complexity. However, dropping any of it would reduce the model precision based on adjusted R-square measure. Hence, we have decided to include both factors in the model whilst acknowledging this relation.
+Based on the statistical summary, four variables (Religion, Marital Status, Ethnicity and Region of Workplace appear to not be significant at a 5% level of significance. In other words, regardless of which category an individual falls into within these four variables, it will not have a significant effect on the salary they are earning based on the model. 
+
+This result supports the lack of difference between the observed categories in the exploratory data analysis of these variables. Furthermore, dropping these variables contributes to achieving a parsimonious model.
+
+Based on the Chi-Square independence test, as the variables are not independent from each other, there were considerations to drop one of the variables to reduce the complexity of the model. However, dropping any of the variables would reduce the model precision based on the adjusted R-square measure. Hence, both factors remain in the model whilst this relation is acknowledged.
+
 
 ## 4.4 Multiple Linear Regression with non-significant variables dropped
 
-```{r, results='asis'}
-# Drop less significant variables
-facQlfs.lm2 <- lm(Salary ~ Age+ Education + Sex + 
-                          Industry  + NumEmployee + 
-                          Occupation,  data=facQlfs)
+```{r}
+facQlfs.lm2 <- lm(Salary ~ Age+ Education + Sex + Industry  + NumEmployee + Occupation,  data=facQlfs)
+```
 
-stargazer(list(facQlfs.lm1, facQlfs.lm2), type = "html", header = FALSE)
+```{r,results='asis',echo=FALSE}
+stargazer(list(facQlfs.lm1, facQlfs.lm2), type = "html", header = FALSE,style = "qje", 
+          font.size = "scriptsize", no.space = TRUE)
 ```
 
 
-At first glance, we can see that the adjusted $R^2$ slightly decreased (from 0.4748 to 0.4677), however the trade-off between explanatory power of variation in dataset and generality of the model is worth dropping these variables.
+At first glance, it can be seen that the adjusted $R^2$ slightly decreased from 0.4748 to 0.4677. However, the trade-off between the explanatory power of variation in the data set and the generality of the model makes it worth dropping these variables.
 
-Interpretation of the coefficients:
-Age (continuous):
+**Interpretation of the coefficients**:
+**Age (continuous)**:
 Under the conditions of ceteris paribus, an increase in age by one year will increase salary by 2.87£ on average conditional on the individual being of working age (i.e. over 16). 
 
-All other variables (categorical):
-Holding all other variables constant, a (category of variable) earns (coefficient value)£ more (*less* if -ve) than a (baseline of variable) on average.
- 
-Example for Sex and Occupation:
+**All other variables (categorical)**:
+A general statement can be said about all the other variables. Holding all other variables constant, a (category of variable) earns £(coefficient value) more (or less if it is negative) than a (baseline of categorical variable) on average.
+
+For example - for Sex and Occupation:
 
 *Holding all other variables constant, a typical male earns 7.69£ more than a female on average.*
 
@@ -607,10 +610,11 @@ Example for Sex and Occupation:
 ### 4.4.1 Model assumption checking
 In order to validate the linear regression model, running a diagnostic check for independence, normality and constant variance is required.
 
-Independence:
+**Independence**:
 Since this is a survey data, it is assumed that the observations are independent from each other as the individuals surveyed were randomly selected. The independence condition is therefore satisfied.
 
-Normality:
+**Normality**:
+
 ```{r,echo = FALSE}
 qqnorm(facQlfs.lm2$residuals) 
 qqline(facQlfs.lm2$residuals)
@@ -618,7 +622,8 @@ qqline(facQlfs.lm2$residuals)
 
 The qqnorm plot shows that the majority of the data falls on the “qqnormal” line which indicates that the residuals are normally distributed. The normality condition is therefore satisfied.
 
-Constant variance: 
+**Constant variance**:
+
 ```{r, echo=FALSE}
 
 ggplot(facQlfs.lm2,aes(x=facQlfs.lm2$fitted,y=facQlfs.lm2$residuals))+geom_point()+labs(title='Residual vs. Fitted value',x='Fitted',y='Residual')+theme(plot.title = element_text(hjust = 0.5))
@@ -630,17 +635,20 @@ bptest(Salary ~ Education + Sex +
 
 ```
 
-It may also be that our model is not of the correct form (i.e. polynomial form) due to the fact that we may have missed important predictors from excluding limiting explanatory variable to those specifically interested in. 
+The graph of residuals against the fitted values displays the seeming existence of a trend. However, this may be due to the fact that the calculations of the salary involved using the mean for the salary interval. Otherwise, it can be concluded that there is some sort of relationship that is yet to be observed that is being captured by the error term.
 
-Using the bptest (Breusch-Pagan test) from lmtest, it indicated that we do not have a constant variance. Our null hypothesis is that there is homoscedasticity, meaning that the variance does not depend on auxiliary regressors. Our p-value (0.001) is really small so we can reject our $H_o$. 
-Although constance variance is not satisfied, using log transformation does not rectify this condition (the adjusted $R^2$ becomes 0.2879).
+It may also be that the model is not of the correct form (i.e. polynomial form) due to the fact that some important predictors may have been missed from excluding limiting explanatory variable to those specifically interested in. 
+
+Using the bptest (Breusch-Pagan test) from the “lmtest” library, it indicated that there is no constant variance. The null hypothesis is that there is homoscedasticity, meaning that the variance does not depend on auxiliary regressors. The obtained p-value (0.001) is really small so the $H_o$ can be rejected. 
+
+Although constance variance is not satisfied, performing a logarithmic transformation does not rectify this condition (the adjusted $R^2$ becomes 0.2879).
 
 ## 4.5 Pairwise T-Tests
 $H_o$: The mean of salary for one group is same as another group in a variable.
 
 $H_a$: The mean of salary for one group is not the same as another group in a variable. 
 
-```{r,echo = FALSE,message=FALSE,result='asis'}
+```{r,echo = FALSE,message=FALSE}
 pairwise.t.test(facQlfs$Salary,facQlfs$Education)
 pairwise.t.test(facQlfs$Salary,facQlfs$Sex)
 pairwise.t.test(facQlfs$Salary,facQlfs$Industry)
@@ -648,13 +656,13 @@ pairwise.t.test(facQlfs$Salary,facQlfs$NumEmployee)
 pairwise.t.test(facQlfs$Salary,facQlfs$Occupation)
 ```
 
-Note that the pairwise t-test compares every category within a variable against every other category and checks whether there is a significant mean difference between them or not. However, assuming that the dataset is normarlly distributed is a limitation as our dataset does not satisfy this condition. Our data set is not normally distributed as our variables are mainly categorical in nature.
+Notice that the pairwise t-test compares every category of a variable and checks whether there is a significant mean difference between them. However, the limitation is the assumption that the data set follows a normal distribution. The data set is, however, not normally distributed considering majority of the variables are categorical in nature.
 
-If the p-value is greater than 0.05 significant level, we reject the $H_o$ and conclude $H_a$ is true. 
-If the p-value is smaller than 0.05 significant level, we fail to reject the $H_o$ and conclude $H_a$ is true. 
+If the p-value is greater than 0.05 significant level, $H_o$ is rejected and it can be concluded that $H_a$ is true. 
+If the p-value is smaller than 0.05 significant level, rejecting the $H_o$ fails and it can be concluded $H_a$ is true. 
 
 **NumEmployee**:
-There is significant evidence to prove that there are different mean of salary for NumEmployee between each category on average.
+There is significant evidence to prove that there are different means of salary for NumEmployee between each category on average.
 
 **Sex**:
 There is significant difference between the two genders. This could indicate the existence of gender discrimination. Considering the 1.07 ratio of female to male observations, the discrimination cannot be regarded as merely a sampling error.
@@ -671,27 +679,25 @@ There is sufficient evidence indicating that mean salary of the “Degree” gro
 #5. Discussion and Conclusion
 
 The aim of this project is to develop a regression model predicting a person’s salary. 
-The data set about the labour workforce of the United Kingdom provided by the UK Office for National Statistics initially included 739 variables and 88,528 observations. Guided by the literature, a subset of 11 variables of interest were selected: age, sex, occupation, industry, education, number of employees, religion, marital status, ethnicity and region of workplace. Regarding these identified variables, the data set was explored descriptively and statistical tests such as the Student’s t-test and chi-square test were performed to investigate the significance and influence of the different variables leading to interesting results. 
+The data set about the labour workforce of the United Kingdom provided by the UK Office for National Statistics initially included 739 variables and 88,528 observations. Guided by the literature, a subset of 11 variables of interest were selected: age, sex, occupation, industry, education, number of employees, religion, marital status, ethnicity and region of workplace. Regarding these identified variables, the data set was explored descriptively and statistical tests such as the Student’s t-test and Chi-square test were performed to investigate the significance and influence of the different variables leading to interesting results. 
 
-The univariate data exploration lead to the result that one should note that the number of employees in the workplace can be interpreted as size of the organisation and therefore inferences made would follow this logic. An inference that can be made therefore is that the larger the organisation the more likely one is to earn a higher salary. Additionally,  there is evidence of gender discrimination within our dataset, this result is not only due to our dataset as we rejected the $H_o$ at the 0.1% significance level. Moreover, motivation for studying a Master’s programme instead of stopping at undergrad level is providing as it was discovered that a Master’s degree is resulting in a significantly higher salary. Interestingly,  in the industry sector “ Banking and Finance” the salary is the highest compared, consequently we should switch our major to Finance instead of BA.  
+The univariate data exploration led to the result that one should note that the number of employees in the workplace can be interpreted as the size of the organisation and therefore inferences made would follow this logic. An inference that can be made therefore is that the larger the organisation, the more likely one earns a higher salary. Additionally, there is evidence of gender discrimination within the data set and this result is not only due to the data set upon the rejection of the $H_o$ at the 0.1% significance level. Moreover, motivation for studying a Master’s programme instead of stopping at an undergraduate level is provided as it was discovered that a Master’s degree results in a significantly higher salary. Interestingly,  in the industry sector “ Banking and Finance”, the salary is the highest comparatively.
 
-Moreover, a counterintuitive finding was revealed: ethnicity is not significant and can be excluded from the regression model. However, when considering the limited numbers of observations of ethnicities other than “white” this result is less surprising (White: 486, Asian: 21, Black: 15  , Other: 21 ).
+A counterintuitive finding revealed that ethnicity is not significant and can be excluded from the regression model. However, when considering the limited numbers of observations of ethnicities other than “white”, the results are less surprising (White: 486, Asian: 21, Black: 15  , Other: 21).
 
-The bivariate data exploration of the variables education and occupation, education and industry lead to the conclusion that both tuples of variables are not independent and must be included in a subsequent linear regression model.
+The bivariate data exploration of the variables education and occupation, education and industry led to the conclusion that both tuples of variables are not independent and must be included in a subsequent linear regression model.
 
 Overall, the findings led to a reduced set of variables which only include age, sex, occupation, industry, education and number of employees serving as independent variables for the development of a linear regression model predicting salary.
 
-Generally, the model can be used to answer questions regarding monetary securities (such as loans, credit card debt repayment). Moreover, customised offers and advertisements can be sent to clients and customers driving a company’s business success. Given a non-discriminating scenario and under exaggerating circumstances, a customer with a low salary would receive advertisements or discount coupons for toothpaste, whereas a customer with a high salary would receive an invitation for trying out a sports car. In both situations the customer’s satisfaction is potentially increased.
+Generally, the model can be used to answer questions regarding monetary securities (such as loans, credit card debt repayment). Moreover, customised offers and advertisements can be sent to clients and customers driving a company’s business success. Given a non-discriminating and exaggerated circumstances, a customer with a very low salary would for instance receive advertisements or discount coupons for purchasing toothpaste whilst a customer with a high salary would receive an invitation to try out a new sports car model. In both situations, there is a form of mutualism in play in terms of both the customer’s satisfaction and the business’s return.
 
-After exploring the selected data set descriptively and building a linear regression model predicting the salary of people of different sex, age, educational qualifications and industries, the subsequent action is to test the accuracy of the developed predictive model. Thus, testing our model on more datasets is required, serving as a reference in validating the performance analysis of the model. 
+After exploring the selected data set descriptively and building a linear regression model predicting the salary of people of different sex, age, educational qualifications and industries, the subsequent action is to test the accuracy of the developed predictive model. Thus, testing the model on more data sets is required. This would serve as a reference in validating the performance analysis of the model. 
 
-The applicability of the conceived model on other countries with similar socio-economical structures can then be tested. An interesting study would therefore be to deteremine whether the developed model predicts the salary for citizens of those countries with sufficient accuracy. If this is satisfied, other european countries could potentially apply the model. Furthermore, based on the findings, an adapted and more specific questionnaire could minimise the need to exclude observations. Of course one should not restrict this to the extent where it is biased. The removal of this limitation could result in a potential improvement of the accuracy of the predictive model.
-
-A person’s salary is of interest in various situations: Landlords need income proofs for security and banks evaluate the eligibility of a credit card for a customer. This is all dependent on the person’s regular income. Satisfying the conditions for obtaining a loan is likely to be based off a person’s salary level. Furthermore, determining an individuals salary and therefore willingness to pay could allow for retail companies to take part in 1st degree price discrimination. Tailoring offerings on an individual level would achieve better company returns and increase profit making possibilities of the company. Moreover, data is already being gathered by such companies in the form of loyalty cards and therefore integrating a developed version of our model could enable this theoretical optimal situation to become reality.
+The applicability of the conceived model on other countries with similar socio-economical structures can then be tested. An interesting study would therefore be to determine whether the developed model predicts the salary for citizens of those countries with sufficient accuracy. If this is satisfied, other european countries could potentially apply the model. Furthermore, based on the findings, an adapted and more specific questionnaire could minimise the need to exclude observations. Undoubtedly, one should not restrict this to the extent where it is biased. The removal of this limitation could result in a potential improvement of the accuracy of the predictive model.
 
 
 #6. Project Github Repository
-([Link for Project Github Repository](https://github.com/wygdd/MSF_Project)) 
+[Link for Project Github Repository](https://github.com/wygdd/MSF_Project)
 
 #7. References
 
