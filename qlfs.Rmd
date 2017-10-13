@@ -1,6 +1,6 @@
 ---
 title: "Maths and Statistics Foundations Project"
-author: "Team N: 01380750,01408680,01436826,01429506,01453725,01275660"
+author: "Team N: Darren Tan(01436826), Joachim Kibsgaard-Petersen(01275660), Linn Bieske(01453725), Qi Zhang(01408680),Sarah Laouiti(01429506), Wenyu Guo(01380750)"
 output:
   rmarkdown::html_document:
     theme: lumen
@@ -47,8 +47,6 @@ library(knitr)
 library(stargazer)
 library(gridExtra)
 library(texreg)
-library(broom)
-library(purrr)
 alldata <- read_dta("lfsp_jm17_eul.dta")
 ```
 
@@ -643,7 +641,7 @@ Using the bptest (Breusch-Pagan test) from the “lmtest” library, it indicate
 
 Although constance variance is not satisfied, performing a logarithmic transformation does not rectify this condition (the adjusted $R^2$ becomes 0.2879).
 
-## 4.5 Pairwise T-Tests
+## 4.5 Pairwise t-tests
 $H_o$: The mean of salary for one group is same as another group in a variable.
 
 $H_a$: The mean of salary for one group is not the same as another group in a variable. 
@@ -701,28 +699,30 @@ The applicability of the conceived model on other countries with similar socio-e
 
 #7. References
 
-European Union (2014) ‘Tackling the gender pay gap in the European Union’, pp. 15. [Accessed 10 October 2017]
-Available at: http://ec.europa.eu/justice/gender-equality/files/gender_pay_gap/140319_gpg_en.pdf
-
 Blinder, S. A. (1973) ‘Wage Discrimination: Reduced Form and Structural Estimates’, The Journal of Human Resources, 8(4), pp. 436-455. [Accessed 11 October 2017]
 Available at: http://www.jstor.org/stable/pdf/144855.pdf?refreqid=excelsior%3Aaabd22fcb1bb4b577ca37a51c72dea58
  
+Bovill, D. (2015) ‘Annual Survey of Hours and Earnings: 2015 Provisional Results’ [Accessed 12 October 2017]
+Available at: https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/bulletins/annualsurveyofhoursandearnings/2015provisionalresults
+
 Brynin, M and Güveli, A. (2012) ‘Understanding the ethnic pay gap in Britain’, Work, employment and society, 26(4), pp. 574-587. [Accessed 10 October 2017]
 Available at: http://journals.sagepub.com/doi/pdf/10.1177/0950017012445095
+
+European Union (2014) ‘Tackling the gender pay gap in the European Union’, pp. 15. [Accessed 10 October 2017]
+Available at: http://ec.europa.eu/justice/gender-equality/files/gender_pay_gap/140319_gpg_en.pdf
 
 Gerhard, U., Schwarzer, A. and Slupik, V. (eds) (1988) ‘Auf Kosten der Frauen. Frauenrechte im Sozialstaat’, Weinheim/Basel: Beltz Verlag. 
 						
 Kickbusch, I. and Riedmüller, B. (eds) (1984) ‘Die armen Frauen. Frauen und Sozialpolitik’, Frankfurt/Main: Suhrkamp. 
 
+Mattila, A. and Choi, C. (2013) 'An Analysis of Consumers’ Reactions to Travel Websites’ Discrimination by Computer Platform' Cornell Hospitality Quarterly, 55(2), 210-215 Journals.sagepub.com. [Accessed 13 Oct. 2017]. Available at: http://journals.sagepub.com/doi/pdf/10.1177/1938965513509879
+
 Office for National Statistics Social Survey Division, Northern Ireland Statistics and Research Agency. Central Survey Unit (ONS) (2017), ‘Quarterly Labour Force Survey, January - March, 2017’, UK Data Service. [Accessed 27 September 2017]
 Available at: http://doi.org/10.5255/UKDA-SN-8195-1 
-
-Bovill, D. (2015) ‘Annual Survey of Hours and Earnings: 2015 Provisional Results’ [Accessed 12 October 2017]
-Available at: https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/bulletins/annualsurveyofhoursandearnings/2015provisionalresults
 
 United Nations (2017). *‘United Nations Sustainable Development: Gender equality and women's empowerment.’*
 [Accessed 11 October 2017]
 Available at: http://www.un.org/sustainabledevelopment/gender-equality/
 
-Mattila, A. and Choi, C. (2017). An Analysis of Consumers’ Reactions to Travel Websites’ Discrimination by Computer PlatformCornell Hospitality Quarterly - Anna S. Mattila, Choongbeom Choi, 2014. [online] Journals.sagepub.com. Available at: http://journals.sagepub.com/doi/pdf/10.1177/1938965513509879 [Accessed 13 Oct. 2017].
+
 
